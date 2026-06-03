@@ -1,0 +1,290 @@
+{
+  "updated_at": "2026-06-03T00:49:03.826323+00:00",
+  "data_sources": {
+    "fifa_rank": "FIFA Apr 1, 2026 (refresh: Jun 9)",
+    "elo_rating": "eloratings.net early-Jan 2026 snapshot",
+    "betsie_win": "Action Network BETSIE model, May 30 baseline"
+  },
+  "team_meta": {
+    "Argentina": {
+      "fifa": 2,
+      "elo": 2113
+    },
+    "Spain": {
+      "fifa": 1,
+      "elo": 2171
+    },
+    "France": {
+      "fifa": 3,
+      "elo": 2063
+    },
+    "England": {
+      "fifa": 4,
+      "elo": 2042
+    },
+    "Brazil": {
+      "fifa": 6,
+      "elo": 1979
+    },
+    "Portugal": {
+      "fifa": 7,
+      "elo": 1976
+    },
+    "Colombia": {
+      "fifa": 5,
+      "elo": 1998
+    },
+    "Netherlands": {
+      "fifa": 8,
+      "elo": 1965
+    },
+    "Germany": {
+      "fifa": 9,
+      "elo": 1945
+    },
+    "Croatia": {
+      "fifa": 10,
+      "elo": 1925
+    },
+    "Italy": {
+      "fifa": 11,
+      "elo": 0
+    },
+    "Belgium": {
+      "fifa": 12,
+      "elo": 1922
+    },
+    "Morocco": {
+      "fifa": 13,
+      "elo": 1872
+    },
+    "Switzerland": {
+      "fifa": 14,
+      "elo": 1880
+    },
+    "USA": {
+      "fifa": 15,
+      "elo": 1845
+    },
+    "Mexico": {
+      "fifa": 17,
+      "elo": 1819
+    },
+    "Japan": {
+      "fifa": 18,
+      "elo": 1815
+    },
+    "Senegal": {
+      "fifa": 20,
+      "elo": 1790
+    },
+    "Ecuador": {
+      "fifa": 23,
+      "elo": 1759
+    },
+    "Uruguay": {
+      "fifa": 16,
+      "elo": 1825
+    },
+    "Iran": {
+      "fifa": 19,
+      "elo": 1797
+    },
+    "South Korea": {
+      "fifa": 22,
+      "elo": 1770
+    },
+    "Australia": {
+      "fifa": 24,
+      "elo": 1755
+    },
+    "Egypt": {
+      "fifa": 25,
+      "elo": 1745
+    },
+    "Algeria": {
+      "fifa": 21,
+      "elo": 1782
+    },
+    "Norway": {
+      "fifa": 26,
+      "elo": 1740
+    },
+    "Sweden": {
+      "fifa": 30,
+      "elo": 1700
+    },
+    "Scotland": {
+      "fifa": 38,
+      "elo": 1640
+    },
+    "Türkiye": {
+      "fifa": 27,
+      "elo": 1735
+    },
+    "Turkey": {
+      "fifa": 27,
+      "elo": 1735
+    },
+    "Ivory Coast": {
+      "fifa": 36,
+      "elo": 1690
+    },
+    "Tunisia": {
+      "fifa": 34,
+      "elo": 1715
+    },
+    "Cape Verde": {
+      "fifa": 65,
+      "elo": 1505
+    },
+    "Ghana": {
+      "fifa": 73,
+      "elo": 1525
+    },
+    "DR Congo": {
+      "fifa": 55,
+      "elo": 1560
+    },
+    "South Africa": {
+      "fifa": 58,
+      "elo": 1545
+    },
+    "Czech Republic": {
+      "fifa": 42,
+      "elo": 1670
+    },
+    "Austria": {
+      "fifa": 28,
+      "elo": 1730
+    },
+    "Paraguay": {
+      "fifa": 48,
+      "elo": 1620
+    },
+    "Saudi Arabia": {
+      "fifa": 55,
+      "elo": 1575
+    },
+    "Iraq": {
+      "fifa": 62,
+      "elo": 1530
+    },
+    "Uzbekistan": {
+      "fifa": 67,
+      "elo": 1520
+    },
+    "Canada": {
+      "fifa": 31,
+      "elo": 1695
+    },
+    "Qatar": {
+      "fifa": 53,
+      "elo": 1570
+    },
+    "Bosnia and Herzegovina": {
+      "fifa": 75,
+      "elo": 1500
+    },
+    "Curacao": {
+      "fifa": 88,
+      "elo": 1380
+    },
+    "Jordan": {
+      "fifa": 71,
+      "elo": 1500
+    },
+    "Haiti": {
+      "fifa": 84,
+      "elo": 1450
+    },
+    "Panama": {
+      "fifa": 39,
+      "elo": 1620
+    },
+    "New Zealand": {
+      "fifa": 85,
+      "elo": 1465
+    }
+  },
+  "betsie_win": {
+    "England": 0.202,
+    "Spain": 0.156,
+    "France": 0.13,
+    "Brazil": 0.118,
+    "Portugal": 0.082,
+    "Germany": 0.074,
+    "Netherlands": 0.061,
+    "Argentina": 0.049,
+    "Italy": 0.0,
+    "Croatia": 0.024,
+    "Belgium": 0.022,
+    "Colombia": 0.021,
+    "Morocco": 0.014,
+    "Switzerland": 0.011,
+    "Uruguay": 0.009,
+    "USA": 0.007,
+    "Mexico": 0.005,
+    "Senegal": 0.005,
+    "Japan": 0.004,
+    "Ecuador": 0.003,
+    "Iran": 0.002,
+    "South Korea": 0.002,
+    "Egypt": 0.001,
+    "Norway": 0.001,
+    "Australia": 0.001,
+    "Algeria": 0.001
+  },
+  "betsie_path": {
+    "Argentina": {
+      "winGroup": 0.62,
+      "top2": 0.84,
+      "qualify": 0.91,
+      "r16": 0.68,
+      "qf": 0.41,
+      "sf": 0.18,
+      "final": 0.1,
+      "winWC": 0.049
+    },
+    "France": {
+      "winGroup": 0.55,
+      "top2": 0.78,
+      "qualify": 0.86,
+      "r16": 0.62,
+      "qf": 0.45,
+      "sf": 0.28,
+      "final": 0.2,
+      "winWC": 0.13
+    },
+    "England": {
+      "winGroup": 0.6,
+      "top2": 0.82,
+      "qualify": 0.89,
+      "r16": 0.7,
+      "qf": 0.52,
+      "sf": 0.36,
+      "final": 0.28,
+      "winWC": 0.202
+    },
+    "Spain": {
+      "winGroup": 0.58,
+      "top2": 0.81,
+      "qualify": 0.88,
+      "r16": 0.66,
+      "qf": 0.48,
+      "sf": 0.31,
+      "final": 0.23,
+      "winWC": 0.156
+    },
+    "Brazil": {
+      "winGroup": 0.56,
+      "top2": 0.79,
+      "qualify": 0.86,
+      "r16": 0.63,
+      "qf": 0.42,
+      "sf": 0.27,
+      "final": 0.18,
+      "winWC": 0.118
+    }
+  }
+}

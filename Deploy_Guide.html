@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC 2026 Tool · Deploy Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--green:#00C853;--green-dark:#0d3318;--navy:#111827;--amber:#F5A623;--red:#E24B4A;--blue:#3B82F6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#F3F4F6;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#111827;padding:30px 20px 60px;line-height:1.55}
+.wrap{max-width:960px;margin:0 auto}
+h1{font-size:24px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+h1 .badge{background:var(--green);color:var(--green-dark);font-size:12px;padding:2px 8px;border-radius:4px;font-weight:700;letter-spacing:0.3px}
+.sub{font-size:13px;color:#6b7280;margin-bottom:20px}
+section{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:22px 24px;margin-bottom:18px;box-shadow:0 2px 6px rgba(17,24,39,0.04)}
+section h2{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+section h2 .pill{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;letter-spacing:0.3px}
+section h2 .pill.path1{background:var(--green);color:var(--green-dark)}
+section h2 .pill.path2{background:var(--blue);color:#fff}
+section .sec-sub{font-size:12px;color:#6b7280;margin-bottom:14px}
+.step{display:grid;grid-template-columns:32px 1fr;gap:12px;margin-top:12px;align-items:start}
+.step .num{background:var(--green);color:var(--green-dark);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Saira',sans-serif;font-size:13px}
+.step .body{font-size:13px;line-height:1.6}
+.step .body strong{display:block;margin-bottom:3px;font-size:13px;color:var(--navy)}
+pre{background:#0f172a;color:#e2e8f0;padding:12px 14px;border-radius:8px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:1.6;margin:8px 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#f3f4f6;padding:1px 5px;border-radius:3px}
+.callout{background:rgba(0,200,83,0.06);border-left:3px solid var(--green);padding:12px 14px;border-radius:0 8px 8px 0;font-size:12px;margin-top:12px;line-height:1.6}
+.callout.warn{background:rgba(245,166,35,0.06);border-color:var(--amber)}
+.callout.info{background:rgba(59,130,246,0.05);border-color:var(--blue)}
+.callout b{color:var(--navy)}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th{background:#f8f9fa;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;color:#374151}
+td{padding:8px 10px;border-top:1px solid #f1f3f5;vertical-align:top}
+td:first-child{font-weight:600}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:10px}
+.file-card{background:var(--navy);color:#fff;padding:12px 14px;border-radius:8px;font-size:12px}
+.file-card .name{font-family:ui-monospace,Menlo,monospace;color:var(--green);font-weight:600;font-size:12px}
+.file-card .desc{color:#9CA3AF;margin-top:3px;font-size:11px;line-height:1.4}
+.tl-grid{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:12px;margin-top:8px}
+.tl-day{font-family:'Saira',sans-serif;font-weight:800;background:var(--gray1);color:var(--navy);padding:3px 9px;border-radius:4px;font-size:11px;align-self:start;text-align:center}
+.gray1{background:#f3f4f6}
+ul{list-style:none;padding-left:0}
+ul li{padding:3px 0 3px 22px;position:relative;font-size:12px;line-height:1.5}
+ul li::before{content:"·";position:absolute;left:8px;color:#6b7280;font-weight:700;font-size:14px}
+ul li b{color:#111827}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Deploy · GitHub Pages + WordPress <span class="badge">v12 · Jun 2</span></h1>
+<div class="sub">Self-contained tool that fetches daily-refresh data from a JSON file in the same repo. Path #1 ready today; path #2 (auto-cron) ready to enable when stable.</div>
+
+<section>
+<h2>Files in this deploy package</h2>
+<div class="file-grid">
+<div class="file-card"><div class="name">index.html</div><div class="desc">The tool. Single file, 203 KB. Fetches live_data.json on load with fallback to inlined defaults if fetch fails.</div></div>
+<div class="file-card"><div class="name">live_data.json</div><div class="desc">FIFA rank + Elo + BETSIE values that change. ~5 KB. Updated daily.</div></div>
+<div class="file-card"><div class="name">update_live_data.py</div><div class="desc">Daily updater script. Pulls Elo, optionally FIFA, preserves BETSIE.</div></div>
+<div class="file-card"><div class="name">github_actions_daily_update.yml</div><div class="desc">Path #2: scheduled auto-update via GitHub Actions. Move to .github/workflows/ to enable.</div></div>
+</div>
+</section>
+
+<section>
+<h2>Step 1 · Push to GitHub <span class="pill path1">Path #1</span></h2>
+<div class="step"><div class="num">1</div><div class="body"><strong>Create repo</strong> at github.com/new. Name it <code>wc-2026-tool</code> (or whatever). <b>Public.</b> Initialize with README.</div></div>
+<div class="step"><div class="num">2</div><div class="body"><strong>Upload 3 files to repo root:</strong> <code>index.html</code>, <code>live_data.json</code>, <code>update_live_data.py</code>. Drag-and-drop in browser or use <code>git push</code>. Commit to main.</div></div>
+<div class="step"><div class="num">3</div><div class="body"><strong>Enable Pages.</strong> Settings → Pages → Source: "Deploy from a branch" → Branch: main, folder: / (root) → Save. Wait 1-2 min. URL appears: <code style="word-break:break-all">https://USERNAME.github.io/wc-2026-tool/</code></div></div>
+<div class="step"><div class="num">4</div><div class="body"><strong>Verify the tool loads.</strong> Open the URL in a new tab. Open browser DevTools Console — should see <code>"Live data loaded · updated Jun 2"</code>. If fetch fails (e.g., file 404), tool still works with inlined defaults.</div></div>
+
+<div class="callout"><b>What just happened:</b> GitHub Pages serves your static files at a public HTTPS URL. The tool fetches <code>./live_data.json</code> from the same origin on each page load. When you update the JSON, every visitor gets the new data within seconds (no caching delay).</div>
+</section>
+
+<section>
+<h2>Step 2 · Embed in WordPress</h2>
+<div class="step"><div class="num">1</div><div class="body"><strong>Add a Custom HTML block</strong> to your page or post.</div></div>
+<div class="step"><div class="num">2</div><div class="body"><strong>Paste this:</strong>
+<pre>&lt;iframe
+  src="https://USERNAME.github.io/wc-2026-tool/"
+  width="100%"
+  height="2800"
+  frameborder="0"
+  style="border:0;display:block;width:100%;max-width:1200px;margin:0 auto;"
+  allowfullscreen&gt;
+&lt;/iframe&gt;</pre>
+Replace <code>USERNAME</code>. Publish.</div></div>
+
+<div class="callout warn"><b>iframe height:</b> 2800 fits the Matchup tab fully expanded on desktop. If your WordPress theme is narrow, try 2200. Form tab (with squad collapsibles open) needs more — users can tap to collapse if iframe is short.</div>
+</section>
+
+<section>
+<h2>Step 3 · Daily refresh routine <span class="pill path1">Path #1 active</span></h2>
+<div class="sec-sub">~2 minutes daily during tournament. Or 5 min weekly pre-tournament since FIFA ranks update monthly.</div>
+
+<div class="step"><div class="num">1</div><div class="body"><strong>Pull the repo locally:</strong>
+<pre>git clone https://github.com/USERNAME/wc-2026-tool.git
+cd wc-2026-tool
+pip3 install requests beautifulsoup4   # one-time</pre></div></div>
+
+<div class="step"><div class="num">2</div><div class="body"><strong>Run the update:</strong>
+<pre>python3 update_live_data.py             # Elo only
+python3 update_live_data.py --fifa      # Elo + FIFA
+python3 update_live_data.py --dry-run   # preview, no changes</pre></div></div>
+
+<div class="step"><div class="num">3</div><div class="body"><strong>For BETSIE updates (manual):</strong> when Action Network reruns BETSIE, open <code>live_data.json</code> in any text editor, paste new percentages into the <code>betsie_win</code> and <code>betsie_path</code> blocks. Save.</div></div>
+
+<div class="step"><div class="num">4</div><div class="body"><strong>For FIFA refresh (manual override):</strong> create a <code>fifa_ranks.json</code> file with the latest ranks:
+<pre>{
+  "Spain": 1, "Argentina": 2, "France": 3,
+  "England": 4, "Colombia": 5, "Brazil": 6,
+  ...
+}</pre>
+Then run <code>python3 update_live_data.py --fifa</code>.</div></div>
+
+<div class="step"><div class="num">5</div><div class="body"><strong>Push:</strong>
+<pre>git add live_data.json
+git commit -m "daily update $(date +%Y-%m-%d)"
+git push</pre>
+Tool updates within 30 seconds on next page load. No WordPress changes needed.</div></div>
+</section>
+
+<section>
+<h2>Step 4 · Enable Path #2 (optional, hands-off mode) <span class="pill path2">Path #2 ready</span></h2>
+<div class="sec-sub">GitHub Actions auto-runs the update script daily at 7am ET. You stop doing the daily routine entirely — just monitor that it's working.</div>
+
+<div class="step"><div class="num">1</div><div class="body"><strong>In your local repo</strong>, create the folder:
+<pre>mkdir -p .github/workflows
+mv github_actions_daily_update.yml .github/workflows/daily-update.yml</pre></div></div>
+
+<div class="step"><div class="num">2</div><div class="body"><strong>Edit the file</strong>: uncomment the <code>schedule:</code> block (remove the <code>#</code> from 2 lines). Save.</div></div>
+
+<div class="step"><div class="num">3</div><div class="body"><strong>Push:</strong>
+<pre>git add .github/workflows/daily-update.yml
+git commit -m "enable daily auto-update"
+git push</pre></div></div>
+
+<div class="step"><div class="num">4</div><div class="body"><strong>Verify:</strong> repo → Actions tab → "Daily Live Data Update" should appear in the workflow list. Click "Run workflow" to trigger manually as a smoke test. Subsequent runs happen automatically at 11:00 UTC daily.</div></div>
+
+<div class="callout info"><b>When path #2 fires</b>: workflow runs Python script → fetches Elo → commits updated <code>live_data.json</code> → push back to main. Tool sees new data within seconds. Cron timing: 11:00 UTC = 7:00 AM ET = 4:00 AM PT.</div>
+</section>
+
+<section>
+<h2>Timeline — Tue Jun 2 → Thu Jun 4 (target go-live)</h2>
+<div class="tl-grid">
+<div class="tl-day">Tue Jun 2</div><div><b>Tonight</b>: Push v12 to GitHub. Confirm WordPress iframe renders. Verify <code>live_data.json</code> fetches successfully (DevTools Console).</div>
+<div class="tl-day">Wed Jun 3</div><div><b>Morning</b>: Test daily routine end-to-end. Add a friendly to spreadsheet → re-extract data → push → verify tool shows new info. Iterate on any UX issues caught.</div>
+<div class="tl-day">Thu Jun 4</div><div><b>Go live.</b> Share WordPress URL with investor recipients. Run daily update in evening (Sweden, Spain, France friendlies tonight).</div>
+<div class="tl-day">Fri Jun 5</div><div>Daily update. Sportsbook markets may start opening for matchup bets.</div>
+<div class="tl-day">Mon Jun 9</div><div><b>FIFA refresh day.</b> Pull latest ranks (paste into <code>fifa_ranks.json</code>), run <code>python3 update_live_data.py --fifa</code>, push.</div>
+<div class="tl-day">Wed Jun 10</div><div><b>Squad locks for Mexico</b> (24h before opener). All teams' squads lock progressively. Elo final pre-tournament pull.</div>
+<div class="tl-day">Thu Jun 11</div><div><b>KICKOFF</b> · Mexico vs South Africa, 3pm ET. Tool goes from "preview mode" to live use. Results-entry routine begins.</div>
+</div>
+</section>
+
+<section>
+<h2>Troubleshooting</h2>
+<table>
+<thead><tr><th>Issue</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Tool loads but no "Live data loaded" log</td><td>live_data.json wasn't fetched. Check it's in repo root, GitHub Pages served it (open URL <code>.../live_data.json</code> directly), and there's no CORS issue (same-origin should always work)</td></tr>
+<tr><td>Tool shows old FIFA ranks after update</td><td>Browser cache. Hard refresh (Ctrl+Shift+R / Cmd+Shift+R). Tool already sends <code>cache: no-cache</code> on fetch, so subsequent visits get fresh data</td></tr>
+<tr><td>Squad clubs missing</td><td>Squad enrichment is a separate workstream — see Squads tab in database. Tool currently shows player names + positions only. Clubs/age/caps coming in v11 of database</td></tr>
+<tr><td>Friendly results not showing in tool</td><td>Data is inlined in the tool itself, not in live_data.json. To refresh: re-extract from spreadsheet, rebuild tool, redeploy. Will be a daily-ish task during friendly window (Jun 2-10)</td></tr>
+<tr><td>GitHub Actions workflow fails</td><td>Most likely: eloratings.net scraping broke (their JS-rendered table is fragile). Workflow has <code>continue-on-error: true</code> so it won't block. Update script can be improved with a more stable Elo source if needed</td></tr>
+<tr><td>WordPress iframe shows blank</td><td>Some WordPress security plugins block iframes from external domains. Whitelist <code>*.github.io</code> in plugin settings, or self-host the tool instead</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>What stays inlined vs lives in live_data.json</h2>
+<table>
+<thead><tr><th>Data</th><th>Where it lives</th><th>How to update</th></tr></thead>
+<tbody>
+<tr><td>FIFA rank, Elo rating</td><td>live_data.json</td><td>Daily script (Elo) + manual paste (FIFA monthly)</td></tr>
+<tr><td>BETSIE win-WC %, path probabilities</td><td>live_data.json</td><td>Manual paste when BETSIE reruns</td></tr>
+<tr><td>Team flags, colors, WC apps, prev result</td><td>Inlined in index.html</td><td>Edit HTML when WC ends (rare)</td></tr>
+<tr><td>Squads (1,246 players)</td><td>Inlined in index.html</td><td>Re-extract from spreadsheet + rebuild + push (every few days)</td></tr>
+<tr><td>Fixtures (144 group + 32 KO)</td><td>Inlined in index.html</td><td>Locked. KO teams filled in after Jun 27</td></tr>
+<tr><td>H2H matches (459 records)</td><td>Inlined in index.html</td><td>Static — historical data, no updates needed</td></tr>
+<tr><td>Played friendlies + Rest Calc</td><td>Inlined in index.html</td><td>Re-extract + rebuild + push daily during Jun 2-10 friendly window</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>Heuristic:</b> things that change daily (ranks, model outputs) go in live_data.json — instant update via Python script. Things that change weekly or less (squads, fixtures, friendlies) stay inlined — refresh requires re-extracting from spreadsheet and pushing new HTML.</div>
+</section>
+
+</div>
+</body>
+</html>
