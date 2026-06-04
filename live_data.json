@@ -1,14 +1,13 @@
 {
-  "updated_at": "2026-06-04T12:30:00-04:00",
+  "updated_at": "2026-06-04T18:55:45.564042+00:00",
   "data_sources": {
     "fifa_rank": {
       "as_of": "2026-04-01",
-      "next_update": "2026-06-09 (Wikipedia) / 2026-06-11 (FIFA official)",
-      "source": "FOX News / Wikipedia / inside.fifa.com"
+      "method": "file"
     },
     "elo_rating": {
       "as_of": "2026-01-19",
-      "note": "Wikipedia snapshot. eloratings.net updates daily; not auto-fetched. ~4 months stale."
+      "method": "file"
     },
     "betsie_win": {
       "as_of": "2026-05-30",
@@ -20,6 +19,20 @@
       "as_of": "2026-05-30",
       "next_update": "2026-06-10 (per Action Network — no interim refresh)",
       "note": "Locked baseline. Current values authoritative through Jun 10."
+    },
+    "match_odds": {
+      "as_of": "2026-06-04T18:45:00-04:00",
+      "source": "The Odds API",
+      "status": "EMPTY — run python3 update_live_data.py --odds on Mac to populate"
+    },
+    "winner_outrights": {
+      "as_of": "2026-06-04T18:45:00-04:00",
+      "source": "The Odds API",
+      "books": [
+        "DraftKings",
+        "BetRivers"
+      ],
+      "status": "PARTIAL — top-8 favorites seeded from Jun 4 14:44 ET; full 48 fills on --odds run"
     }
   },
   "team_meta": {
@@ -53,15 +66,15 @@
     },
     "Netherlands": {
       "fifa": 7,
-      "elo": 1965
+      "elo": 1959
     },
     "Germany": {
       "fifa": 10,
-      "elo": 1945
+      "elo": 1910
     },
     "Croatia": {
       "fifa": 11,
-      "elo": 1925
+      "elo": 1933
     },
     "Italy": {
       "fifa": 11,
@@ -69,7 +82,7 @@
     },
     "Belgium": {
       "fifa": 9,
-      "elo": 1922
+      "elo": 1849
     },
     "Morocco": {
       "fifa": 8,
@@ -77,7 +90,7 @@
     },
     "Switzerland": {
       "fifa": 19,
-      "elo": 1880
+      "elo": 1897
     },
     "USA": {
       "fifa": 16,
@@ -89,19 +102,19 @@
     },
     "Japan": {
       "fifa": 18,
-      "elo": 1815
+      "elo": 1879
     },
     "Senegal": {
       "fifa": 14,
-      "elo": 1790
+      "elo": 1869
     },
     "Ecuador": {
       "fifa": 23,
-      "elo": 1759
+      "elo": 1933
     },
     "Uruguay": {
       "fifa": 17,
-      "elo": 1825
+      "elo": 1890
     },
     "Iran": {
       "fifa": 21,
@@ -125,7 +138,7 @@
     },
     "Norway": {
       "fifa": 44,
-      "elo": 1740
+      "elo": 1922
     },
     "Sweden": {
       "fifa": 39,
@@ -141,7 +154,7 @@
     },
     "Turkey": {
       "fifa": 22,
-      "elo": 1735
+      "elo": 1880
     },
     "Ivory Coast": {
       "fifa": 33,
@@ -303,5 +316,23 @@
       "final": 0.18,
       "winWC": 0.118
     }
+  },
+  "match_odds": [],
+  "winner_outrights": {
+    "consensus": {
+      "Brazil": 850,
+      "Argentina": 900,
+      "France": 468,
+      "Netherlands": 1900,
+      "Germany": 1300,
+      "Spain": 450,
+      "England": 650,
+      "Portugal": 900
+    },
+    "books": [
+      "DraftKings",
+      "BetRivers"
+    ],
+    "note": "Partial — only 2 books offering WC winner outrights as of Jun 4. Full 48-team list fills when update_live_data.py --odds runs (each book has all 48)."
   }
 }
