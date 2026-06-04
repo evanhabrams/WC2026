@@ -1,9 +1,10 @@
 {
-  "updated_at": "2026-06-03T00:49:03.826323+00:00",
+  "updated_at": "2026-06-04T12:00:00-04:00",
   "data_sources": {
     "fifa_rank": "FIFA Apr 1, 2026 (refresh: Jun 9)",
     "elo_rating": "eloratings.net early-Jan 2026 snapshot",
-    "betsie_win": "Action Network BETSIE model, May 30 baseline"
+    "betsie_win": "Action Network BETSIE model, May 30 baseline",
+    "notes": "Squads + friendlies refreshed from DB v12 on Jun 4 noon ET. FIFA Apr 1 baseline + Elo Jan snapshot still pending Jun 9/10 refresh."
   },
   "team_meta": {
     "Argentina": {
