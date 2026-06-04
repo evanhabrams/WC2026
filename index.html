@@ -374,6 +374,7 @@ footer{text-align:center;padding:18px;color:var(--gray4);font-size:10px;border-t
     <div class="disclaimer"><i class="ti ti-info-circle"></i> Tournament-winner projections use BETSiE model (May 30, 2026 baseline). Matchup-level value bets are sample — real lines open Jun 4-5.</div>
     <div class="bet-card" id="valueBetsCard"></div>
     <div class="bet-card" id="futuresCard"></div>
+    <div class="bet-card" id="marketVsBetsieCard"></div>
     <div class="bet-card path-card" id="pathCard"></div>
   </div>
 
@@ -502,6 +503,9 @@ async function loadLiveData(){
     // Overlay BETSIE
     if (live.betsie_win) Object.assign(BETSIE_WIN, live.betsie_win);
     if (live.betsie_path) Object.assign(BETSIE_PATH, live.betsie_path);
+    // Capture odds data (added Jun 4 — populated by update_live_data.py --odds)
+    if (Array.isArray(live.match_odds)) window.MATCH_ODDS = live.match_odds;
+    if (live.winner_outrights) window.WINNER_OUTRIGHTS = live.winner_outrights;
     // Show a small "live data" indicator if successful
     const ts = live.updated_at ? new Date(live.updated_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
     console.log('Live data loaded · updated ' + ts);
@@ -718,28 +722,112 @@ function renderFixturesCard(elId, team, meta){
 // === BETS TAB ===
 function renderBets(){
   const t1m = TEAM_META[team1], t2m = TEAM_META[team2];
-  // Sample value bets
-  $('valueBetsCard').innerHTML = `
-    <h3>Projected Value Bets <span class="badge">SAMPLE</span></h3>
-    <div class="value-bet">
-      <div class="grade A">A</div>
-      <div class="bet-desc">${team1} Win <small>vs ${team2}</small></div>
-      <div class="bet-odds">+125</div>
-      <div class="bet-edge">+6.2%</div>
-    </div>
-    <div class="value-bet">
-      <div class="grade B">B</div>
-      <div class="bet-desc">Over 2.5 Goals <small>${team1} vs ${team2}</small></div>
-      <div class="bet-odds">-110</div>
-      <div class="bet-edge">+4.1%</div>
-    </div>
-    <div class="value-bet">
-      <div class="grade C">C</div>
-      <div class="bet-desc">BTTS Yes <small>${team1} vs ${team2}</small></div>
-      <div class="bet-odds">-105</div>
-      <div class="bet-edge">+2.0%</div>
-    </div>
-  `;
+
+  // === Compute Elo-derived true probabilities (same model as Matchup tab) ===
+  const eloDiff = (t1m.elo - t2m.elo) + 30;
+  const p1raw = 1/(1+Math.pow(10, -eloDiff/400));
+  const p_draw = 0.24 * (1 - Math.abs(p1raw - 0.5)*2 * 0.6);
+  const trueP_team1 = p1raw * (1 - p_draw);
+  const trueP_team2 = (1-p1raw) * (1 - p_draw);
+  const trueP_draw = p_draw;
+  const eloFactor = Math.max(-1.5, Math.min(1.5, (t1m.elo - t2m.elo)/250));
+  const lam1 = 1.4 + eloFactor*0.4;
+  const lam2 = 1.4 - eloFactor*0.4;
+  const lamTotal = lam1 + lam2;
+  // Poisson P(X≤k | λ): P(X=k) = λ^k * e^-λ / k!
+  function poissonCDF(k, lam) {
+    let s = 0, term = Math.exp(-lam);
+    for (let i = 0; i <= k; i++) { s += term; term *= lam / (i+1); }
+    return s;
+  }
+  const trueP_under25 = poissonCDF(2, lamTotal);
+  const trueP_over25 = 1 - trueP_under25;
+  // BTTS Yes: P(both score) = (1 - P(team1=0)) * (1 - P(team2=0)), assuming independence
+  const trueP_btts = (1 - Math.exp(-lam1)) * (1 - Math.exp(-lam2));
+
+  // === Lookup market odds for this matchup ===
+  function americanToImplied(price){
+    if (price == null) return null;
+    return price > 0 ? 100/(price+100) : Math.abs(price)/(Math.abs(price)+100);
+  }
+  function grade(edgePP){
+    if (edgePP >= 5) return 'A';
+    if (edgePP >= 3) return 'B';
+    if (edgePP >= 1) return 'C';
+    if (edgePP >= -1) return 'D';
+    return 'F';
+  }
+  function fmtAmerican(p){ return p > 0 ? '+' + p : '' + p; }
+
+  let matchOdds = null;
+  if (window.MATCH_ODDS && Array.isArray(window.MATCH_ODDS)) {
+    matchOdds = window.MATCH_ODDS.find(e =>
+      (e.home === team1 && e.away === team2) || (e.home === team2 && e.away === team1)
+    );
+  }
+
+  let valueBetsHTML = '<h3>Projected Value Bets';
+  if (!matchOdds) {
+    // No market data: show sample / placeholder
+    valueBetsHTML += ' <span class="badge">SAMPLE</span></h3>';
+    valueBetsHTML += '<div style="font-size:13px;color:var(--gray4);padding:8px 0">No sportsbook market available for this fixture yet. Lines typically open ~7 days before kickoff.</div>';
+    valueBetsHTML += `
+      <div class="value-bet">
+        <div class="grade A">A</div>
+        <div class="bet-desc">${team1} Win <small>vs ${team2}</small></div>
+        <div class="bet-odds">+125</div>
+        <div class="bet-edge">+6.2%</div>
+      </div>
+      <div class="value-bet">
+        <div class="grade B">B</div>
+        <div class="bet-desc">Over 2.5 Goals <small>${team1} vs ${team2}</small></div>
+        <div class="bet-odds">-110</div>
+        <div class="bet-edge">+4.1%</div>
+      </div>`;
+  } else {
+    // Real market data — build candidate bets, compute edges, sort by edge
+    valueBetsHTML += ' <span class="badge" style="background:var(--green);color:#fff">LIVE</span></h3>';
+    const homeIsTeam1 = matchOdds.home === team1;
+    const c = matchOdds.consensus || {};
+    const candidates = [];
+    // H2H
+    const h2hHome = c.h2h && c.h2h.home;
+    const h2hAway = c.h2h && c.h2h.away;
+    const h2hDraw = c.h2h && c.h2h.draw;
+    // De-vig the three-way market (sum implied / 1)
+    if (h2hHome != null && h2hAway != null && h2hDraw != null) {
+      const iH = americanToImplied(h2hHome), iA = americanToImplied(h2hAway), iD = americanToImplied(h2hDraw);
+      const vig = iH + iA + iD;
+      const noVigHome = iH / vig, noVigAway = iA / vig, noVigDraw = iD / vig;
+      const trueHome = homeIsTeam1 ? trueP_team1 : trueP_team2;
+      const trueAway = homeIsTeam1 ? trueP_team2 : trueP_team1;
+      candidates.push({desc:`${matchOdds.home} Win`, sub:`vs ${matchOdds.away}`, odds:h2hHome, edge:(trueHome - noVigHome)*100});
+      candidates.push({desc:`${matchOdds.away} Win`, sub:`vs ${matchOdds.home}`, odds:h2hAway, edge:(trueAway - noVigAway)*100});
+      candidates.push({desc:`Draw`, sub:`${matchOdds.home} vs ${matchOdds.away}`, odds:h2hDraw, edge:(trueP_draw - noVigDraw)*100});
+    }
+    // Totals 2.5
+    const t25 = c.totals && c.totals['2.5'];
+    if (t25 && t25.over != null && t25.under != null) {
+      const iO = americanToImplied(t25.over), iU = americanToImplied(t25.under);
+      const vig = iO + iU;
+      candidates.push({desc:'Over 2.5 Goals', sub:`${matchOdds.home} vs ${matchOdds.away}`, odds:t25.over, edge:(trueP_over25 - iO/vig)*100});
+      candidates.push({desc:'Under 2.5 Goals', sub:`${matchOdds.home} vs ${matchOdds.away}`, odds:t25.under, edge:(trueP_under25 - iU/vig)*100});
+    }
+    // Sort by edge descending; show all 5 (or however many we have)
+    candidates.sort((a,b) => b.edge - a.edge);
+    valueBetsHTML += candidates.map(b => {
+      const g = grade(b.edge);
+      const edgeStr = (b.edge >= 0 ? '+' : '') + b.edge.toFixed(1) + '%';
+      return `<div class="value-bet">
+        <div class="grade ${g}">${g}</div>
+        <div class="bet-desc">${b.desc} <small>${b.sub}</small></div>
+        <div class="bet-odds">${fmtAmerican(b.odds)}</div>
+        <div class="bet-edge">${edgeStr}</div>
+      </div>`;
+    }).join('');
+    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Consensus across ${matchOdds.books.length} book${matchOdds.books.length===1?'':'s'} · ${matchOdds.books.slice(0,3).join(', ')}${matchOdds.books.length>3?', +'+(matchOdds.books.length-3):''}</div>`;
+  }
+  $('valueBetsCard').innerHTML = valueBetsHTML;
   // Tournament futures — 2-card with implied odds, market context below
   const w1 = BETSIE_WIN[team1] || betsiePath(team1).winWC;
   const w2 = BETSIE_WIN[team2] || betsiePath(team2).winWC;
@@ -775,6 +863,45 @@ function renderBets(){
       <span class="market-pct">${(favPct*100).toFixed(1)}%</span>
     </div>
   `;
+
+  // === Market vs BETSIE — tournament winner comparison ===
+  let mvbHTML = '<h3>Market vs BETSiE <small style="font-weight:500;color:var(--gray4);font-size:11px">· tournament winner</small></h3>';
+  if (window.WINNER_OUTRIGHTS && window.WINNER_OUTRIGHTS.consensus) {
+    const market = window.WINNER_OUTRIGHTS.consensus;
+    const books = window.WINNER_OUTRIGHTS.books || [];
+    // Compute market implied probs, de-vig across all teams
+    const marketImplied = {};
+    let totalVig = 0;
+    for (const t in market) {
+      const p = market[t] > 0 ? 100/(market[t]+100) : Math.abs(market[t])/(Math.abs(market[t])+100);
+      marketImplied[t] = p;
+      totalVig += p;
+    }
+    // Top 8 by BETSIE
+    const topBetsie = Object.entries(BETSIE_WIN).sort((a,b) => b[1]-a[1]).slice(0, 8);
+    mvbHTML += '<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:6px 12px;align-items:center;font-size:13px;margin-top:8px">';
+    mvbHTML += '<div style="font-size:10px;text-transform:uppercase;color:var(--gray4);letter-spacing:0.4px">Team</div>';
+    mvbHTML += '<div style="font-size:10px;text-transform:uppercase;color:var(--gray4);letter-spacing:0.4px;text-align:right">BETSiE</div>';
+    mvbHTML += '<div style="font-size:10px;text-transform:uppercase;color:var(--gray4);letter-spacing:0.4px;text-align:right">Market</div>';
+    mvbHTML += '<div style="font-size:10px;text-transform:uppercase;color:var(--gray4);letter-spacing:0.4px;text-align:right">Edge</div>';
+    for (const [team, betsiePct] of topBetsie) {
+      const meta = TEAM_META[team] || {flag:'⚽'};
+      const marketP = marketImplied[team] != null ? marketImplied[team] / totalVig : null;
+      const edgePP = marketP != null ? (betsiePct - marketP) * 100 : null;
+      const edgeColor = edgePP == null ? 'var(--gray4)' : (edgePP >= 3 ? 'var(--green)' : edgePP <= -3 ? 'var(--red)' : 'var(--gray4)');
+      const edgeStr = edgePP == null ? '—' : (edgePP >= 0 ? '+' : '') + edgePP.toFixed(1) + 'pp';
+      const marketStr = marketP != null ? (marketP*100).toFixed(1) + '%' : '—';
+      mvbHTML += `<div>${meta.flag} ${team}</div>`;
+      mvbHTML += `<div style="text-align:right;font-weight:600">${(betsiePct*100).toFixed(1)}%</div>`;
+      mvbHTML += `<div style="text-align:right">${marketStr}</div>`;
+      mvbHTML += `<div style="text-align:right;color:${edgeColor};font-weight:600">${edgeStr}</div>`;
+    }
+    mvbHTML += '</div>';
+    mvbHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:10px">Market consensus across ${books.length} book${books.length===1?'':'s'}${books.length?': '+books.slice(0,3).join(', '):''}. Edge in percentage points; positive = BETSiE sees more value than market.</div>`;
+  } else {
+    mvbHTML += '<div style="font-size:13px;color:var(--gray4);padding:8px 0">Market futures load when <code style="background:var(--gray1);padding:1px 4px;border-radius:2px">update_live_data.py --odds</code> is run. Currently showing BETSiE-only projections above.</div>';
+  }
+  $('marketVsBetsieCard').innerHTML = mvbHTML;
   // Path projection
   const path1 = betsiePath(team1), path2 = betsiePath(team2);
   const stages = [
