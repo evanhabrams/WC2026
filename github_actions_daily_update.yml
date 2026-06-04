@@ -37,7 +37,7 @@ jobs:
         run: pip install requests beautifulsoup4
 
       - name: Run update script
-        run: python3 update_live_data.py --fifa
+        run: python3 update_live_data.py --quiet
         continue-on-error: true  # Don't fail the workflow if scraping fails
 
       - name: Commit and push changes
