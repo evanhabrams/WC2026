@@ -17,9 +17,12 @@ Usage:
   python3 update_live_data.py --offline          # skip web, use JSON files only (use when offline or rate-limited)
   python3 update_live_data.py --offline-fifa     # web Elo, file FIFA (use after manually editing fifa_ranks.json)
   python3 update_live_data.py --offline-elo      # web FIFA, file Elo
+  python3 update_live_data.py --odds             # ALSO fetch + cache odds from The Odds API (uses 2 requests)
   python3 update_live_data.py --dry-run          # show changes, don't write
   python3 update_live_data.py --quiet            # minimal output (for cron)
   python3 update_live_data.py --push             # auto-commit + push to GitHub after update
+  
+  Typical daily run:  python3 update_live_data.py --odds --push
 
 Dependencies (one-time):
   pip3 install requests beautifulsoup4
@@ -40,8 +43,11 @@ LIVE_DATA = SCRIPT_DIR / "live_data.json"
 FIFA_FILE = SCRIPT_DIR / "fifa_ranks.json"
 ELO_FILE = SCRIPT_DIR / "elo_ratings.json"
 
-USER_AGENT = "WC2026Tool/1.1 (data refresh script; contact: action-network)"
+USER_AGENT = "WC2026Tool/1.2 (data refresh script; contact: action-network)"
 TIMEOUT = 20
+
+ODDS_API_KEY = "4403a23c60c1a6e37fc572c0b547e517"
+ODDS_BASE = "https://api.the-odds-api.com/v4"
 
 # Map external names (Wikipedia / FIFA / Elo) → our internal team_meta keys
 NAME_ALIASES = {
@@ -132,6 +138,100 @@ def scrape_elo_top20():
     return None, None
 
 # ============================================================
+# Odds API (The Odds API — soccer_fifa_world_cup + soccer_fifa_world_cup_winner)
+# ============================================================
+
+def american_to_implied(price):
+    """Convert American odds to implied probability (with vig). Returns 0-1."""
+    if price is None:
+        return None
+    if price > 0:
+        return 100.0 / (price + 100)
+    else:
+        return abs(price) / (abs(price) + 100)
+
+def fetch_match_odds():
+    """Fetch H2H + spreads + totals for all WC events. Returns list of normalized events."""
+    url = f"{ODDS_BASE}/sports/soccer_fifa_world_cup/odds/"
+    params = {"apiKey": ODDS_API_KEY, "regions": "us", "markets": "h2h,spreads,totals", "oddsFormat": "american"}
+    try:
+        r = requests.get(url, params=params, timeout=TIMEOUT)
+        r.raise_for_status()
+        events = r.json()
+        remaining = r.headers.get("x-requests-remaining", "?")
+        print(f"  [odds] match odds: {len(events)} events fetched (quota remaining: {remaining})")
+    except requests.RequestException as e:
+        print(f"  [odds] match odds fetch failed: {type(e).__name__}: {e}")
+        return None
+
+    normalized = []
+    for ev in events:
+        out = {
+            "id": ev.get("id"),
+            "commence": ev.get("commence_time"),
+            "home": normalize(ev.get("home_team", "")),
+            "away": normalize(ev.get("away_team", "")),
+            "books": [],
+            "consensus": {"h2h": {}, "totals": {}, "spreads": {}},
+        }
+        h2h_b = {"home": [], "away": [], "draw": []}
+        totals_b = {}
+        spreads_b = {}
+        for bm in ev.get("bookmakers", []):
+            out["books"].append(bm.get("title"))
+            for m in bm.get("markets", []):
+                key = m.get("key")
+                for o in m.get("outcomes", []):
+                    name = o.get("name", "")
+                    price = o.get("price")
+                    point = o.get("point")
+                    if key == "h2h":
+                        if name == out["home"]: h2h_b["home"].append(price)
+                        elif name == out["away"]: h2h_b["away"].append(price)
+                        elif name.lower() == "draw": h2h_b["draw"].append(price)
+                    elif key == "totals":
+                        p = str(point)
+                        totals_b.setdefault(p, {"over": [], "under": []})
+                        if name.lower() == "over": totals_b[p]["over"].append(price)
+                        elif name.lower() == "under": totals_b[p]["under"].append(price)
+                    elif key == "spreads":
+                        spreads_b.setdefault(str(point), {}).setdefault(name, []).append(price)
+        def avg(lst): return round(sum(lst) / len(lst)) if lst else None
+        out["consensus"]["h2h"] = {k: avg(v) for k, v in h2h_b.items()}
+        out["consensus"]["totals"] = {p: {"over": avg(d["over"]), "under": avg(d["under"])} for p, d in totals_b.items()}
+        out["consensus"]["spreads"] = {p: {n: avg(prs) for n, prs in teams.items()} for p, teams in spreads_b.items()}
+        out["books"] = list(set(out["books"]))
+        normalized.append(out)
+    return normalized
+
+def fetch_winner_outrights():
+    """Fetch tournament winner futures."""
+    url = f"{ODDS_BASE}/sports/soccer_fifa_world_cup_winner/odds/"
+    params = {"apiKey": ODDS_API_KEY, "regions": "us", "markets": "outrights", "oddsFormat": "american"}
+    try:
+        r = requests.get(url, params=params, timeout=TIMEOUT)
+        r.raise_for_status()
+        events = r.json()
+        remaining = r.headers.get("x-requests-remaining", "?")
+        print(f"  [odds] outrights: {len(events)} events fetched (quota remaining: {remaining})")
+    except requests.RequestException as e:
+        print(f"  [odds] outrights fetch failed: {type(e).__name__}: {e}")
+        return None
+
+    if not events:
+        return None
+    teams_b = {}
+    books = []
+    for ev in events:
+        for bm in ev.get("bookmakers", []):
+            books.append(bm.get("title"))
+            for m in bm.get("markets", []):
+                for o in m.get("outcomes", []):
+                    teams_b.setdefault(normalize(o.get("name", "")), []).append(o.get("price"))
+    consensus = {t: round(sum(p) / len(p)) for t, p in teams_b.items() if p}
+    return {"consensus": consensus, "books": sorted(set(books))}
+
+# ============================================================
 # JSON fallback loaders
 # ============================================================
 
@@ -212,6 +312,30 @@ def update_live_data(args):
     # ----- BETSIE: never auto-updated -----
     if not args.quiet: print("\n=== BETSIE ===\n  Preserved (internal model — paste new values into live_data.json manually)")
 
+    # ----- ODDS API: opt-in via --odds flag -----
+    if args.odds:
+        if not args.quiet: print("\n=== ODDS API ===")
+        matches = fetch_match_odds()
+        if matches is not None:
+            data["match_odds"] = matches
+            sources["match_odds"] = {"as_of": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                                     "source": "The Odds API", "events": len(matches)}
+            if not args.quiet:
+                print(f"  Cached {len(matches)} match odds events")
+                if matches:
+                    sample = matches[0]
+                    print(f"  Sample: {sample['home']} vs {sample['away']} ({sample.get('commence','')[:10]})")
+                    print(f"    h2h consensus: {sample['consensus'].get('h2h')}")
+        winners = fetch_winner_outrights()
+        if winners is not None:
+            data["winner_outrights"] = winners
+            sources["winner_outrights"] = {"as_of": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                                           "source": "The Odds API", "books": winners.get("books", [])}
+            if not args.quiet:
+                top5 = sorted(winners["consensus"].items(), key=lambda x: x[1])[:5]
+                print(f"  Cached {len(winners['consensus'])} team outrights from {len(winners['books'])} books")
+                print(f"  Top 5 favorites: {', '.join(f'{t} +{p}' for t, p in top5)}")
+
     # Bump timestamp
     data["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -243,6 +367,7 @@ def main():
     p.add_argument("--offline-elo", action="store_true", help="Use elo_ratings.json only (skip Wikipedia for Elo)")
     p.add_argument("--dry-run", action="store_true", help="Show changes, don't write")
     p.add_argument("--quiet", action="store_true", help="Minimal output (for cron jobs)")
+    p.add_argument("--odds", action="store_true", help="Also fetch + cache odds from The Odds API (uses 2 requests/run)")
     p.add_argument("--push", action="store_true", help="After update, git add + commit + push live_data.json")
     args = p.parse_args()
     if not args.quiet:
