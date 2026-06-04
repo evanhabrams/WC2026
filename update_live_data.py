@@ -1,155 +1,254 @@
 #!/usr/bin/env python3
 """
-update_live_data.py
+update_live_data.py — Daily refresher for the WC 2026 Matchup Tool's live_data.json
 
-Daily updater for the WC 2026 Matchup Tool's live_data.json.
-
-What it does:
-  - Pulls latest Elo ratings from eloratings.net (scrapes the World rankings table)
-  - For FIFA rank: pulls from FIFA's published rankings page if accessible,
-    otherwise reads from a manual fifa_ranks.json override file
-  - For BETSIE: preserves whatever's in live_data.json (Action Network's model
-    is internal — paste fresh values manually when BETSIE is rerun)
-  - Writes the merged result back to live_data.json
+What it does, in priority order:
+  FIFA ranks:
+    1. Scrape Wikipedia 'FIFA Men's World Ranking' top-20 table (fresh, updates within hours of FIFA release)
+    2. Fill remaining 28 of 48 WC teams from fifa_ranks.json (manual override file, baseline April 1 2026)
+  Elo ratings:
+    1. Scrape Wikipedia 'World Football Elo Ratings' top-20 table (updates periodically)
+    2. Fill remaining 28 of 48 WC teams from elo_ratings.json (manual override file, baseline Jan 19 2026)
+  BETSIE win + path:
+    Always preserve existing values (internal Action Network model, paste manually when refreshed)
 
 Usage:
-  python3 update_live_data.py              # update Elo, preserve everything else
-  python3 update_live_data.py --fifa       # also refresh FIFA ranks
-  python3 update_live_data.py --dry-run    # show what would change, don't write
+  python3 update_live_data.py                    # full refresh (default — try web, fall back to JSON files)
+  python3 update_live_data.py --offline          # skip web, use JSON files only (use when offline or rate-limited)
+  python3 update_live_data.py --offline-fifa     # web Elo, file FIFA (use after manually editing fifa_ranks.json)
+  python3 update_live_data.py --offline-elo      # web FIFA, file Elo
+  python3 update_live_data.py --dry-run          # show changes, don't write
+  python3 update_live_data.py --quiet            # minimal output (for cron)
+  python3 update_live_data.py --push             # auto-commit + push to GitHub after update
 
-Requires: requests, beautifulsoup4
-Install:  pip3 install requests beautifulsoup4
+Dependencies (one-time):
+  pip3 install requests beautifulsoup4
 """
-
-import json, sys, argparse, datetime
+import json, sys, argparse, datetime, subprocess
 from pathlib import Path
 
 try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    print("ERROR: requires 'requests' and 'beautifulsoup4'")
-    print("Install: pip3 install requests beautifulsoup4")
+    print("ERROR: missing dependencies. Install with:")
+    print("  pip3 install requests beautifulsoup4")
     sys.exit(1)
 
-# Team name aliases between our internal names and what external sources use
+SCRIPT_DIR = Path(__file__).parent
+LIVE_DATA = SCRIPT_DIR / "live_data.json"
+FIFA_FILE = SCRIPT_DIR / "fifa_ranks.json"
+ELO_FILE = SCRIPT_DIR / "elo_ratings.json"
+
+USER_AGENT = "WC2026Tool/1.1 (data refresh script; contact: action-network)"
+TIMEOUT = 20
+
+# Map external names (Wikipedia / FIFA / Elo) → our internal team_meta keys
 NAME_ALIASES = {
-    "United States": "USA", "USA": "USA",
-    "Republic of Ireland": "Ireland",
-    "South Korea": "South Korea", "Korea Republic": "South Korea",
-    "Turkey": "Türkiye", "Türkiye": "Türkiye",
-    "DR Congo": "DR Congo", "Congo DR": "DR Congo",
+    "United States": "USA", "USA": "USA", "US": "USA",
+    "Korea Republic": "South Korea", "South Korea": "South Korea",
+    "Türkiye": "Turkey", "Turkey": "Turkey",
+    "Czechia": "Czech Republic", "Czech Republic": "Czech Republic",
+    "DR Congo": "DR Congo", "Congo DR": "DR Congo", "Democratic Republic of the Congo": "DR Congo",
     "Cape Verde": "Cape Verde", "Cabo Verde": "Cape Verde",
-    "Czech Republic": "Czech Republic", "Czechia": "Czech Republic",
-    "Bosnia and Herzegovina": "Bosnia and Herzegovina", "Bosnia-Herzegovina": "Bosnia and Herzegovina",
-    "Curacao": "Curacao", "Curaçao": "Curacao",
+    "Curaçao": "Curacao", "Curacao": "Curacao",
     "Ivory Coast": "Ivory Coast", "Côte d'Ivoire": "Ivory Coast", "Cote d'Ivoire": "Ivory Coast",
+    "Bosnia and Herzegovina": "Bosnia and Herzegovina", "Bosnia & Herzegovina": "Bosnia and Herzegovina", "Bosnia-Herzegovina": "Bosnia and Herzegovina",
+    "Republic of Ireland": "Ireland", "Ireland": "Ireland",
 }
 
-LIVE_DATA_PATH = Path(__file__).parent / "live_data.json"
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; WC2026Tool/1.0)"}
-
-def normalize_team(name):
+def normalize(name):
     return NAME_ALIASES.get(name.strip(), name.strip())
 
-def fetch_elo_ratings():
-    """Scrape eloratings.net for current World rankings."""
-    print("Fetching Elo ratings from eloratings.net...")
+# ============================================================
+# Web scrapers (best-effort; gracefully fall back to JSON files)
+# ============================================================
+
+def scrape_fifa_top20():
+    """Wikipedia's 'FIFA Men's World Ranking' page has a top-20 table near the top."""
+    url = "https://en.wikipedia.org/wiki/FIFA_Men%27s_World_Ranking"
     try:
-        r = requests.get("http://eloratings.net/", headers=HEADERS, timeout=15)
+        r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=TIMEOUT)
         r.raise_for_status()
     except requests.RequestException as e:
-        print(f"  ERROR: {e}")
-        return None
+        print(f"  [web] FIFA scrape failed: {type(e).__name__}: {e}")
+        return None, None
     soup = BeautifulSoup(r.text, "html.parser")
-    elo = {}
-    # eloratings.net renders rankings client-side; the data is in JS variables
-    # As a fallback, we try to parse any HTML table they expose
-    # If that fails, the data is in window.ratingdata in their JS
-    for tag in soup.find_all("script"):
-        if tag.string and "ratingdata" in str(tag.string):
-            text = tag.string
-            # Best-effort: try to extract team:rating pairs
-            print("  Note: eloratings.net data is JS-rendered; consider using their CSV export")
-            return None
-    # If we got here without parsing, try a fallback static URL
-    print("  No table found; manual update may be needed")
-    return None
+    # Find the first wikitable with column header "Team" and "Rank"
+    for table in soup.find_all("table", class_="wikitable"):
+        headers = [th.get_text(strip=True) for th in table.find_all("th")[:6]]
+        if "Team" in headers and ("Rank" in headers or "#" in headers):
+            ranks = {}
+            for row in table.find_all("tr")[1:25]:
+                cells = row.find_all(["td", "th"])
+                if len(cells) < 3: continue
+                try:
+                    rank = int(cells[0].get_text(strip=True))
+                    # Team name often in col 2 or 3 (col 2 = change icon, sometimes empty)
+                    team_text = cells[2].get_text(strip=True) or cells[1].get_text(strip=True)
+                    # Strip any [reference] markers
+                    team = team_text.split('[')[0].strip()
+                    if team:
+                        ranks[normalize(team)] = rank
+                except (ValueError, IndexError):
+                    continue
+            if ranks:
+                date_caption = soup.find(string=lambda s: s and "Top 20 rankings as of" in s)
+                date_str = str(date_caption).replace("Top 20 rankings as of", "").strip() if date_caption else "unknown"
+                return ranks, date_str
+    print("  [web] FIFA: no wikitable matched expected schema")
+    return None, None
 
-def fetch_fifa_ranks_fallback():
-    """Read FIFA ranks from a manual fifa_ranks.json file in the same directory."""
-    manual = Path(__file__).parent / "fifa_ranks.json"
-    if manual.exists():
-        with open(manual) as f:
+def scrape_elo_top20():
+    """Wikipedia's 'World Football Elo Ratings' page has a top-20 table."""
+    url = "https://en.wikipedia.org/wiki/World_Football_Elo_Ratings"
+    try:
+        r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=TIMEOUT)
+        r.raise_for_status()
+    except requests.RequestException as e:
+        print(f"  [web] Elo scrape failed: {type(e).__name__}: {e}")
+        return None, None
+    soup = BeautifulSoup(r.text, "html.parser")
+    for table in soup.find_all("table", class_="wikitable"):
+        headers = [th.get_text(strip=True) for th in table.find_all("th")[:6]]
+        if "Team" in headers and ("Points" in headers or "Rating" in headers):
+            ratings = {}
+            for row in table.find_all("tr")[1:25]:
+                cells = row.find_all(["td", "th"])
+                if len(cells) < 4: continue
+                try:
+                    team_text = cells[2].get_text(strip=True) or cells[1].get_text(strip=True)
+                    team = team_text.split('[')[0].strip()
+                    points = int(cells[3].get_text(strip=True).replace(",", ""))
+                    if team:
+                        ratings[normalize(team)] = points
+                except (ValueError, IndexError):
+                    continue
+            if ratings:
+                date_caption = soup.find(string=lambda s: s and "Top 20 rankings as of" in s)
+                date_str = str(date_caption).replace("Top 20 rankings as of", "").strip() if date_caption else "unknown"
+                return ratings, date_str
+    print("  [web] Elo: no wikitable matched expected schema")
+    return None, None
+
+# ============================================================
+# JSON fallback loaders
+# ============================================================
+
+def load_json_file(path, label):
+    if not path.exists():
+        print(f"  [file] {label}: {path.name} not found")
+        return None, None
+    try:
+        with open(path) as f:
             data = json.load(f)
-        print(f"  Loaded {len(data)} FIFA ranks from manual fifa_ranks.json")
-        return data
-    print("  No manual fifa_ranks.json found; preserving existing values")
-    return None
+    except json.JSONDecodeError as e:
+        print(f"  [file] {label}: invalid JSON in {path.name}: {e}")
+        return None, None
+    meta = data.pop("_meta", {})
+    as_of = meta.get("as_of", "unknown")
+    print(f"  [file] {label}: {len(data)} entries from {path.name} (as of {as_of})")
+    return {normalize(k): v for k, v in data.items()}, as_of
 
-def load_live_data():
-    if not LIVE_DATA_PATH.exists():
-        print(f"WARNING: {LIVE_DATA_PATH} does not exist, will create new")
-        return {"team_meta": {}, "betsie_win": {}, "betsie_path": {}}
-    with open(LIVE_DATA_PATH) as f:
-        return json.load(f)
+# ============================================================
+# Core update loop
+# ============================================================
 
-def save_live_data(data, dry_run=False):
+def update_live_data(args):
+    if not LIVE_DATA.exists():
+        print(f"ERROR: {LIVE_DATA} not found. Run from deploy_package directory.")
+        sys.exit(1)
+    with open(LIVE_DATA) as f:
+        data = json.load(f)
+    team_meta = data.setdefault("team_meta", {})
+    sources = data.setdefault("data_sources", {})
+
+    # ----- FIFA -----
+    fifa_ranks, fifa_date = (None, None)
+    if not args.offline and not args.offline_fifa:
+        if not args.quiet: print("\n=== FIFA RANKS ===")
+        fifa_ranks, fifa_date = scrape_fifa_top20()
+        if fifa_ranks and not args.quiet:
+            print(f"  [web] {len(fifa_ranks)} teams (as of {fifa_date})")
+    if not fifa_ranks:  # fall back to JSON
+        if not args.quiet: print("\n=== FIFA RANKS (file fallback) ===")
+        fifa_ranks, fifa_date = load_json_file(FIFA_FILE, "FIFA")
+    if fifa_ranks:
+        changes = []
+        for team, rank in fifa_ranks.items():
+            if team in team_meta and team_meta[team].get("fifa") != rank:
+                changes.append((team, team_meta[team].get("fifa"), rank))
+                team_meta[team]["fifa"] = rank
+        if not args.quiet:
+            print(f"  Applied {len(changes)} FIFA rank changes")
+            for t, old, new in sorted(changes, key=lambda x: x[2])[:10]:
+                print(f"    {t:30} #{old} → #{new}")
+            if len(changes) > 10: print(f"    ... and {len(changes)-10} more")
+        sources["fifa_rank"] = {"as_of": fifa_date, "method": "web" if not (args.offline or args.offline_fifa) else "file"}
+
+    # ----- Elo -----
+    elo_ratings, elo_date = (None, None)
+    if not args.offline and not args.offline_elo:
+        if not args.quiet: print("\n=== ELO RATINGS ===")
+        elo_ratings, elo_date = scrape_elo_top20()
+        if elo_ratings and not args.quiet:
+            print(f"  [web] {len(elo_ratings)} teams (as of {elo_date})")
+    if not elo_ratings:
+        if not args.quiet: print("\n=== ELO RATINGS (file fallback) ===")
+        elo_ratings, elo_date = load_json_file(ELO_FILE, "Elo")
+    if elo_ratings:
+        changes = []
+        for team, rating in elo_ratings.items():
+            if team in team_meta and team_meta[team].get("elo") != rating:
+                changes.append((team, team_meta[team].get("elo"), rating))
+                team_meta[team]["elo"] = rating
+        if not args.quiet:
+            print(f"  Applied {len(changes)} Elo changes")
+            for t, old, new in sorted(changes, key=lambda x: -abs(x[2]-(x[1] or 0)))[:10]:
+                print(f"    {t:30} {old} → {rating if False else new} ({(new - (old or 0)):+})")
+            if len(changes) > 10: print(f"    ... and {len(changes)-10} more")
+        sources["elo_rating"] = {"as_of": elo_date, "method": "web" if not (args.offline or args.offline_elo) else "file"}
+
+    # ----- BETSIE: never auto-updated -----
+    if not args.quiet: print("\n=== BETSIE ===\n  Preserved (internal model — paste new values into live_data.json manually)")
+
+    # Bump timestamp
     data["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    if dry_run:
-        print(f"\n[DRY RUN] Would write to {LIVE_DATA_PATH}")
-        print(f"  updated_at: {data['updated_at']}")
-        print(f"  team_meta entries: {len(data.get('team_meta', {}))}")
+
+    if args.dry_run:
+        print(f"\n[DRY RUN] Would write {LIVE_DATA} with updated_at = {data['updated_at']}")
         return
-    with open(LIVE_DATA_PATH, "w", encoding="utf-8") as f:
+    with open(LIVE_DATA, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"\nWrote {LIVE_DATA_PATH}")
-    print(f"  updated_at: {data['updated_at']}")
-    print(f"  team_meta entries: {len(data.get('team_meta', {}))}")
+    if not args.quiet:
+        print(f"\nWrote {LIVE_DATA}")
+        print(f"  updated_at: {data['updated_at']}")
+
+    # Optional auto-push to GitHub
+    if args.push:
+        if not args.quiet: print("\n=== GIT PUSH ===")
+        try:
+            subprocess.run(["git", "add", LIVE_DATA.name], cwd=SCRIPT_DIR, check=True)
+            msg = f"Auto-refresh FIFA + Elo · {datetime.date.today().isoformat()}"
+            subprocess.run(["git", "commit", "-m", msg], cwd=SCRIPT_DIR, check=True)
+            subprocess.run(["git", "push"], cwd=SCRIPT_DIR, check=True)
+            if not args.quiet: print(f"  Pushed: {msg}")
+        except subprocess.CalledProcessError as e:
+            print(f"  Git push failed (continuing): {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--fifa", action="store_true", help="Also refresh FIFA rankings (from fifa_ranks.json)")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would change, don't write")
-    args = parser.parse_args()
-
-    print(f"=== WC 2026 live_data updater · {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')} ===\n")
-
-    data = load_live_data()
-    team_meta = data.setdefault("team_meta", {})
-
-    # Elo update
-    elo = fetch_elo_ratings()
-    if elo:
-        updated = 0
-        for team, rating in elo.items():
-            t = normalize_team(team)
-            if t in team_meta:
-                if team_meta[t].get("elo") != rating:
-                    team_meta[t]["elo"] = rating
-                    updated += 1
-        print(f"  Updated Elo for {updated} teams")
-    else:
-        print("  Elo update skipped — preserving existing values")
-
-    # FIFA update (only if --fifa flag)
-    if args.fifa:
-        fifa = fetch_fifa_ranks_fallback()
-        if fifa:
-            updated = 0
-            for team, rank in fifa.items():
-                t = normalize_team(team)
-                if t in team_meta:
-                    if team_meta[t].get("fifa") != rank:
-                        team_meta[t]["fifa"] = rank
-                        updated += 1
-            print(f"  Updated FIFA rank for {updated} teams")
-
-    # BETSIE: never auto-update (internal Action Network model)
-    print(f"  BETSIE values preserved (internal model — update manually)")
-
-    save_live_data(data, dry_run=args.dry_run)
-    print("\nDone. Commit live_data.json to GitHub to push the update live.")
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--offline", action="store_true", help="Skip web; use both JSON files only")
+    p.add_argument("--offline-fifa", action="store_true", help="Use fifa_ranks.json only (skip Wikipedia for FIFA)")
+    p.add_argument("--offline-elo", action="store_true", help="Use elo_ratings.json only (skip Wikipedia for Elo)")
+    p.add_argument("--dry-run", action="store_true", help="Show changes, don't write")
+    p.add_argument("--quiet", action="store_true", help="Minimal output (for cron jobs)")
+    p.add_argument("--push", action="store_true", help="After update, git add + commit + push live_data.json")
+    args = p.parse_args()
+    if not args.quiet:
+        print(f"=== WC 2026 live_data updater · {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
+    update_live_data(args)
+    if not args.quiet: print("\nDone.")
 
 if __name__ == "__main__":
     main()
