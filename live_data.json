@@ -1,22 +1,38 @@
 {
-  "updated_at": "2026-06-04T12:00:00-04:00",
+  "updated_at": "2026-06-04T12:30:00-04:00",
   "data_sources": {
-    "fifa_rank": "FIFA Apr 1, 2026 (refresh: Jun 9)",
-    "elo_rating": "eloratings.net early-Jan 2026 snapshot",
-    "betsie_win": "Action Network BETSIE model, May 30 baseline",
-    "notes": "Squads + friendlies refreshed from DB v12 on Jun 4 noon ET. FIFA Apr 1 baseline + Elo Jan snapshot still pending Jun 9/10 refresh."
+    "fifa_rank": {
+      "as_of": "2026-04-01",
+      "next_update": "2026-06-09 (Wikipedia) / 2026-06-11 (FIFA official)",
+      "source": "FOX News / Wikipedia / inside.fifa.com"
+    },
+    "elo_rating": {
+      "as_of": "2026-01-19",
+      "note": "Wikipedia snapshot. eloratings.net updates daily; not auto-fetched. ~4 months stale."
+    },
+    "betsie_win": {
+      "as_of": "2026-05-30",
+      "next_update": "2026-06-10 (per Action Network — no interim refresh)",
+      "note": "Locked baseline. Current values authoritative through Jun 10."
+    },
+    "notes": "Jun 4 12:30 ET refresh: FIFA ranks corrected to April 1 baseline (was Jan). Squads + friendlies updated from DB v12. BETSIE locked till Jun 10 per Action Network.",
+    "betsie_path": {
+      "as_of": "2026-05-30",
+      "next_update": "2026-06-10 (per Action Network — no interim refresh)",
+      "note": "Locked baseline. Current values authoritative through Jun 10."
+    }
   },
   "team_meta": {
     "Argentina": {
-      "fifa": 2,
+      "fifa": 3,
       "elo": 2113
     },
     "Spain": {
-      "fifa": 1,
+      "fifa": 2,
       "elo": 2171
     },
     "France": {
-      "fifa": 3,
+      "fifa": 1,
       "elo": 2063
     },
     "England": {
@@ -28,23 +44,23 @@
       "elo": 1979
     },
     "Portugal": {
-      "fifa": 7,
+      "fifa": 5,
       "elo": 1976
     },
     "Colombia": {
-      "fifa": 5,
+      "fifa": 13,
       "elo": 1998
     },
     "Netherlands": {
-      "fifa": 8,
+      "fifa": 7,
       "elo": 1965
     },
     "Germany": {
-      "fifa": 9,
+      "fifa": 10,
       "elo": 1945
     },
     "Croatia": {
-      "fifa": 10,
+      "fifa": 11,
       "elo": 1925
     },
     "Italy": {
@@ -52,23 +68,23 @@
       "elo": 0
     },
     "Belgium": {
-      "fifa": 12,
+      "fifa": 9,
       "elo": 1922
     },
     "Morocco": {
-      "fifa": 13,
+      "fifa": 8,
       "elo": 1872
     },
     "Switzerland": {
-      "fifa": 14,
+      "fifa": 19,
       "elo": 1880
     },
     "USA": {
-      "fifa": 15,
+      "fifa": 16,
       "elo": 1845
     },
     "Mexico": {
-      "fifa": 17,
+      "fifa": 15,
       "elo": 1819
     },
     "Japan": {
@@ -76,7 +92,7 @@
       "elo": 1815
     },
     "Senegal": {
-      "fifa": 20,
+      "fifa": 14,
       "elo": 1790
     },
     "Ecuador": {
@@ -84,39 +100,39 @@
       "elo": 1759
     },
     "Uruguay": {
-      "fifa": 16,
+      "fifa": 17,
       "elo": 1825
     },
     "Iran": {
-      "fifa": 19,
+      "fifa": 21,
       "elo": 1797
     },
     "South Korea": {
-      "fifa": 22,
+      "fifa": 25,
       "elo": 1770
     },
     "Australia": {
-      "fifa": 24,
+      "fifa": 27,
       "elo": 1755
     },
     "Egypt": {
-      "fifa": 25,
+      "fifa": 29,
       "elo": 1745
     },
     "Algeria": {
-      "fifa": 21,
+      "fifa": 28,
       "elo": 1782
     },
     "Norway": {
-      "fifa": 26,
+      "fifa": 44,
       "elo": 1740
     },
     "Sweden": {
-      "fifa": 30,
+      "fifa": 39,
       "elo": 1700
     },
     "Scotland": {
-      "fifa": 38,
+      "fifa": 47,
       "elo": 1640
     },
     "Türkiye": {
@@ -124,87 +140,87 @@
       "elo": 1735
     },
     "Turkey": {
-      "fifa": 27,
+      "fifa": 22,
       "elo": 1735
     },
     "Ivory Coast": {
-      "fifa": 36,
+      "fifa": 33,
       "elo": 1690
     },
     "Tunisia": {
-      "fifa": 34,
+      "fifa": 40,
       "elo": 1715
     },
     "Cape Verde": {
-      "fifa": 65,
+      "fifa": 70,
       "elo": 1505
     },
     "Ghana": {
-      "fifa": 73,
+      "fifa": 65,
       "elo": 1525
     },
     "DR Congo": {
-      "fifa": 55,
+      "fifa": 51,
       "elo": 1560
     },
     "South Africa": {
-      "fifa": 58,
+      "fifa": 60,
       "elo": 1545
     },
     "Czech Republic": {
-      "fifa": 42,
+      "fifa": 41,
       "elo": 1670
     },
     "Austria": {
-      "fifa": 28,
+      "fifa": 24,
       "elo": 1730
     },
     "Paraguay": {
-      "fifa": 48,
+      "fifa": 64,
       "elo": 1620
     },
     "Saudi Arabia": {
-      "fifa": 55,
+      "fifa": 57,
       "elo": 1575
     },
     "Iraq": {
-      "fifa": 62,
+      "fifa": 61,
       "elo": 1530
     },
     "Uzbekistan": {
-      "fifa": 67,
+      "fifa": 62,
       "elo": 1520
     },
     "Canada": {
-      "fifa": 31,
+      "fifa": 30,
       "elo": 1695
     },
     "Qatar": {
-      "fifa": 53,
+      "fifa": 35,
       "elo": 1570
     },
     "Bosnia and Herzegovina": {
-      "fifa": 75,
+      "fifa": 52,
       "elo": 1500
     },
     "Curacao": {
-      "fifa": 88,
+      "fifa": 81,
       "elo": 1380
     },
     "Jordan": {
-      "fifa": 71,
+      "fifa": 68,
       "elo": 1500
     },
     "Haiti": {
-      "fifa": 84,
+      "fifa": 83,
       "elo": 1450
     },
     "Panama": {
-      "fifa": 39,
+      "fifa": 53,
       "elo": 1620
     },
     "New Zealand": {
-      "fifa": 85,
+      "fifa": 95,
       "elo": 1465
     }
   },
