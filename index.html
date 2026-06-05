@@ -653,6 +653,29 @@ function findGiffenProjection(t1, t2){
     (p.home === t1 && p.away === t2) || (p.home === t2 && p.away === t1)
   );
 }
+// Pick the "primary" Over/Under line from sportsbook consensus.
+// Strategy: among all lines offered, choose the one with smallest |over - under| odds spread —
+// that's the line books are actually pricing around (closest to balanced juice).
+// Returns null if no market data available for this matchup.
+function getMarketTotal(t1, t2){
+  if (!window.MATCH_ODDS) return null;
+  const match = window.MATCH_ODDS.find(m =>
+    (m.home === t1 && m.away === t2) || (m.home === t2 && m.away === t1)
+  );
+  if (!match || !match.consensus || !match.consensus.totals) return null;
+  const totals = match.consensus.totals;
+  let bestLine = null, bestSpread = Infinity;
+  for (const lineStr in totals){
+    const t = totals[lineStr];
+    if (t == null || t.over == null || t.under == null) continue;
+    const spread = Math.abs(t.over - t.under);
+    if (spread < bestSpread){
+      bestSpread = spread;
+      bestLine = parseFloat(lineStr);
+    }
+  }
+  return isNaN(bestLine) ? null : bestLine;
+}
 function computeMatchupModel(t1, t2){
   const t1m = TEAM_META[t1], t2m = TEAM_META[t2];
   // === Try Giffen xG first ===
@@ -726,6 +749,16 @@ function renderMatchup(){
   const g1proj = model.g1proj;
   const g2proj = model.g2proj;
 
+  // Real sportsbook total line (median across books, balanced-juice line)
+  const marketTotal = getMarketTotal(team1, team2);
+  const compareLine = (marketTotal != null) ? marketTotal : 2.5;
+  const projTotal = g1proj + g2proj;
+  const isOver = projTotal >= compareLine;
+  // Format market line nicely (e.g. 2.5, 3.25)
+  const marketLabel = (marketTotal != null)
+    ? (Number.isInteger(marketTotal) ? marketTotal.toFixed(1) : String(marketTotal))
+    : '2.5';
+
   // Scoreboard
   $('scoreboardCard').innerHTML = `
     <div class="score-grid">
@@ -739,7 +772,9 @@ function renderMatchup(){
         <div class="score-mid-val">${(g1proj+g2proj).toFixed(1)}</div>
         <div class="score-mid-label" style="margin-top:6px">LINE</div>
         <div class="score-mid-val">${g1proj > g2proj ? team1.slice(0,3).toUpperCase() : team2.slice(0,3).toUpperCase()} ${Math.abs(g1proj - g2proj).toFixed(1)}</div>
-        <div class="score-mid-pill" style="${(g1proj+g2proj) < 2.5 ? 'background:var(--gray2);color:var(--gray4)' : ''}">${(g1proj+g2proj) >= 2.5 ? 'OVER' : 'UNDER'}</div>
+        <div class="score-mid-label" style="margin-top:6px">MARKET O/U${marketTotal == null ? ' <span style="font-size:8px;color:var(--gray4);font-weight:600;text-transform:none;letter-spacing:0;font-style:italic">(est. line)</span>' : ''}</div>
+        <div class="score-mid-val">${marketLabel}</div>
+        <div class="score-mid-pill" style="${!isOver ? 'background:var(--gray2);color:var(--gray4)' : ''}">${isOver ? 'OVER' : 'UNDER'}</div>
       </div>
       <div class="score-team t2">
         <div class="score-flag">${t2m.flag}</div>
