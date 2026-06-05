@@ -18,16 +18,24 @@ Usage:
   python3 update_live_data.py --offline-fifa     # web Elo, file FIFA (use after manually editing fifa_ranks.json)
   python3 update_live_data.py --offline-elo      # web FIFA, file Elo
   python3 update_live_data.py --odds             # ALSO fetch + cache odds from The Odds API (uses 2 requests)
+  python3 update_live_data.py --giffen           # ALSO fetch Giffen xG projections from Google Sheets
   python3 update_live_data.py --dry-run          # show changes, don't write
   python3 update_live_data.py --quiet            # minimal output (for cron)
   python3 update_live_data.py --push             # auto-commit + push to GitHub after update
-  
-  Typical daily run:  python3 update_live_data.py --odds --push
+
+  Typical daily run:  python3 update_live_data.py --odds --giffen --push
+
+Dependencies (one-time):
+  pip3 install requests beautifulsoup4
+  pip3 install google-auth google-api-python-client    # for --giffen
+
+For --giffen: requires google_service_account.json in the same folder (gitignored).
+The sheet must be shared (Viewer) with the service account email inside that JSON.
 
 Dependencies (one-time):
   pip3 install requests beautifulsoup4
 """
-import json, sys, argparse, datetime, subprocess
+import json, sys, os, argparse, datetime, subprocess
 from pathlib import Path
 
 try:
@@ -46,10 +54,20 @@ ELO_FILE = SCRIPT_DIR / "elo_ratings.json"
 USER_AGENT = "WC2026Tool/1.2 (data refresh script; contact: action-network)"
 TIMEOUT = 20
 
-ODDS_API_KEY = "4403a23c60c1a6e37fc572c0b547e517"
+# Odds API key is read from the environment so it never lives in the repo.
+# Set it once in your shell:  export ODDS_API_KEY="your_new_key"
+# (add that line to ~/.zshrc to make it permanent). For GitHub Actions, add it
+# as a repo secret and expose it via `env:` in the workflow.
+ODDS_API_KEY = os.environ.get("ODDS_API_KEY", "")
 ODDS_BASE = "https://api.the-odds-api.com/v4"
 
-# Map external names (Wikipedia / FIFA / Elo) → our internal team_meta keys
+# Giffen xG projections (Google Sheets, fetched via service account)
+GIFFEN_SHEET_ID = "12v8WebV5SakStof9ByCLxAKZWeePqbBgGyZs1dTh_DE"
+GIFFEN_TAB_NAME = "Per Game xG"
+GIFFEN_RANGE = f"'{GIFFEN_TAB_NAME}'!A1:G300"  # A-G columns; max 300 rows handles full bracket
+GIFFEN_CREDENTIALS_FILE = "google_service_account.json"
+
+# Map external names (Wikipedia / FIFA / Elo / Giffen sheet) → our internal team_meta keys
 NAME_ALIASES = {
     "United States": "USA", "USA": "USA", "US": "USA",
     "Korea Republic": "South Korea", "South Korea": "South Korea",
@@ -152,6 +170,9 @@ def american_to_implied(price):
 
 def fetch_match_odds():
     """Fetch H2H + spreads + totals for all WC events. Returns list of normalized events."""
+    if not ODDS_API_KEY:
+        print("  [odds] skipped: ODDS_API_KEY not set. Run: export ODDS_API_KEY=\"your_key\"")
+        return None
     url = f"{ODDS_BASE}/sports/soccer_fifa_world_cup/odds/"
     params = {"apiKey": ODDS_API_KEY, "regions": "us", "markets": "h2h,spreads,totals", "oddsFormat": "american"}
     try:
@@ -206,6 +227,9 @@ def fetch_match_odds():
 
 def fetch_winner_outrights():
     """Fetch tournament winner futures."""
+    if not ODDS_API_KEY:
+        print("  [odds] skipped: ODDS_API_KEY not set. Run: export ODDS_API_KEY=\"your_key\"")
+        return None
     url = f"{ODDS_BASE}/sports/soccer_fifa_world_cup_winner/odds/"
     params = {"apiKey": ODDS_API_KEY, "regions": "us", "markets": "outrights", "oddsFormat": "american"}
     try:
@@ -230,6 +254,99 @@ def fetch_winner_outrights():
                     teams_b.setdefault(normalize(o.get("name", "")), []).append(o.get("price"))
     consensus = {t: round(sum(p) / len(p)) for t, p in teams_b.items() if p}
     return {"consensus": consensus, "books": sorted(set(books))}
+
+# ============================================================
+# Giffen xG Projections (Google Sheets via service account)
+# ============================================================
+
+def fetch_giffen_projections():
+    """Read Giffen's 'Per Game xG' tab from the shared Google Sheet.
+    Returns a list of {home, away, xg_h, xg_a, tot_xg, h_spr, game_no} dicts.
+    Returns None if credentials missing or fetch fails (caller falls back gracefully)."""
+    cred_path = SCRIPT_DIR / GIFFEN_CREDENTIALS_FILE
+    if not cred_path.exists():
+        print(f"  [giffen] credentials file missing: {GIFFEN_CREDENTIALS_FILE}")
+        print(f"           Place service account JSON in {SCRIPT_DIR} (must be gitignored)")
+        return None
+    try:
+        from google.oauth2 import service_account
+        from googleapiclient.discovery import build
+    except ImportError:
+        print("  [giffen] missing dependencies. Install with:")
+        print("           pip3 install google-auth google-api-python-client")
+        return None
+
+    try:
+        creds = service_account.Credentials.from_service_account_file(
+            str(cred_path),
+            scopes=["https://www.googleapis.com/auth/spreadsheets.readonly"],
+        )
+        service = build("sheets", "v4", credentials=creds, cache_discovery=False)
+        result = service.spreadsheets().values().get(
+            spreadsheetId=GIFFEN_SHEET_ID,
+            range=GIFFEN_RANGE,
+        ).execute()
+    except Exception as e:
+        msg = str(e)[:200]
+        print(f"  [giffen] API error: {type(e).__name__}: {msg}")
+        if "403" in msg or "PERMISSION_DENIED" in msg:
+            print("           Sheet may not be shared with the service account email.")
+            print(f"           Service account email is in {GIFFEN_CREDENTIALS_FILE} (client_email field).")
+        return None
+
+    rows = result.get("values", [])
+    if len(rows) < 2:
+        print(f"  [giffen] sheet returned {len(rows)} rows (expected header + data)")
+        return None
+
+    # Skip header row, parse data
+    header = rows[0]
+    expected = ["Game No.", "Home", "Away", "xG H", "xG A", "tot xG", "H Spr"]
+    if header[:7] != expected:
+        print(f"  [giffen] header mismatch — got {header[:7]}")
+        print(f"           expected {expected}")
+        # Continue anyway; column positions are fixed
+
+    projections = []
+    unmapped = set()
+    for r in rows[1:]:
+        if len(r) < 5: continue  # incomplete row
+        try:
+            game_no = int(r[0]) if r[0] else None
+            home_raw = r[1].strip() if len(r) > 1 else ""
+            away_raw = r[2].strip() if len(r) > 2 else ""
+            xg_h = float(r[3]) if len(r) > 3 and r[3] else None
+            xg_a = float(r[4]) if len(r) > 4 and r[4] else None
+            tot_xg = float(r[5]) if len(r) > 5 and r[5] else None
+            h_spr = float(r[6]) if len(r) > 6 and r[6] else None
+        except (ValueError, IndexError):
+            continue  # skip malformed row
+
+        if not home_raw or not away_raw or xg_h is None or xg_a is None:
+            continue
+
+        home = normalize(home_raw)
+        away = normalize(away_raw)
+
+        # Track unmapped names (potential alias gaps)
+        # (We don't have team_meta here to check against — caller will warn)
+        if home_raw != home: pass  # mapped via alias
+        if away_raw != away: pass  # mapped via alias
+
+        projections.append({
+            "game_no": game_no,
+            "home": home,
+            "away": away,
+            "home_raw": home_raw if home != home_raw else None,
+            "away_raw": away_raw if away != away_raw else None,
+            "xg_h": xg_h,
+            "xg_a": xg_a,
+            "tot_xg": tot_xg if tot_xg is not None else round(xg_h + xg_a, 3),
+            "h_spr": h_spr if h_spr is not None else round(xg_a - xg_h, 3),  # note: Giffen formula is xG_A - xG_H
+        })
+
+    return projections
+
 
 # ============================================================
 # JSON fallback loaders
@@ -336,6 +453,37 @@ def update_live_data(args):
                 print(f"  Cached {len(winners['consensus'])} team outrights from {len(winners['books'])} books")
                 print(f"  Top 5 favorites: {', '.join(f'{t} +{p}' for t, p in top5)}")
 
+    # ----- GIFFEN PROJECTIONS: opt-in via --giffen (also runs with --odds for daily convenience) -----
+    if args.giffen or args.odds:
+        if not args.quiet: print("\n=== GIFFEN xG PROJECTIONS ===")
+        projections = fetch_giffen_projections()
+        if projections is not None:
+            data["match_projections"] = projections
+            sources["match_projections"] = {
+                "as_of": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "source": "Action Network / Nick Giffen",
+                "sheet": f"https://docs.google.com/spreadsheets/d/{GIFFEN_SHEET_ID}",
+                "tab": GIFFEN_TAB_NAME,
+                "fixtures": len(projections),
+            }
+            if not args.quiet:
+                print(f"  Cached {len(projections)} match projections")
+                if projections:
+                    sample = projections[0]
+                    print(f"  Sample: Game {sample.get('game_no','?')} | {sample['home']} {sample['xg_h']} xG vs {sample['away']} {sample['xg_a']} xG (tot {sample['tot_xg']})")
+                # Surface any alias gaps for user awareness
+                renamed = [p for p in projections if p.get("home_raw") or p.get("away_raw")]
+                if renamed:
+                    print(f"  Team-name aliases applied to {len(renamed)} fixtures (Giffen → tool keys):")
+                    seen = set()
+                    for p in renamed:
+                        if p.get("home_raw") and p["home_raw"] not in seen:
+                            print(f"    '{p['home_raw']}' → '{p['home']}'")
+                            seen.add(p["home_raw"])
+                        if p.get("away_raw") and p["away_raw"] not in seen:
+                            print(f"    '{p['away_raw']}' → '{p['away']}'")
+                            seen.add(p["away_raw"])
+
     # Bump timestamp
     data["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -368,6 +516,7 @@ def main():
     p.add_argument("--dry-run", action="store_true", help="Show changes, don't write")
     p.add_argument("--quiet", action="store_true", help="Minimal output (for cron jobs)")
     p.add_argument("--odds", action="store_true", help="Also fetch + cache odds from The Odds API (uses 2 requests/run)")
+    p.add_argument("--giffen", action="store_true", help="Also fetch Giffen xG projections from Google Sheets (auto-enabled with --odds)")
     p.add_argument("--push", action="store_true", help="After update, git add + commit + push live_data.json")
     args = p.parse_args()
     if not args.quiet:
