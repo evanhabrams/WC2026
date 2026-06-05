@@ -831,7 +831,6 @@ function renderMatchup(){
   $('winprobCard').innerHTML = `
     <div class="winprob-header">
       <span>Match Win Probability</span>
-      <span class="winprob-source">${model.source === 'giffen' ? 'Powered by Action' : 'Powered by Evan'}</span>
     </div>
     <div class="winprob-bar">
       <div class="winprob-seg t1" style="width:${(p1adj*100).toFixed(0)}%">${(p1adj*100).toFixed(0)}%</div>
