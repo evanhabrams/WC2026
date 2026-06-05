@@ -376,7 +376,6 @@ footer{text-align:center;padding:18px;color:var(--gray4);font-size:10px;border-t
 
   <!-- ===== BETS TAB ===== -->
   <div class="tab-content" id="tab-bets">
-    <div class="disclaimer" id="betsDisclaimer"><i class="ti ti-info-circle"></i> Tournament-winner projections use BETSiE model (May 30, 2026 baseline). Matchup value bets calibrated against live sportsbook consensus.</div>
     <div class="bet-card" id="valueBetsCard"></div>
     <div class="bet-card" id="futuresCard"></div>
     <div class="bet-card" id="marketVsBetsieCard"></div>
@@ -652,6 +651,30 @@ function findGiffenProjection(t1, t2){
   return window.MATCH_PROJECTIONS.find(p =>
     (p.home === t1 && p.away === t2) || (p.home === t2 && p.away === t1)
   );
+}
+// Determine when these two teams could meet in the tournament.
+// Returns {type, text} where type is 'group' (group-stage match) or 'knockout' (different groups).
+function getMeetingContext(t1, t2){
+  if (!DATA || !DATA.teams || !DATA.fixtures) return null;
+  const g1 = DATA.teams[t1] && DATA.teams[t1].group;
+  const g2 = DATA.teams[t2] && DATA.teams[t2].group;
+  if (!g1 || !g2) return null;
+  if (g1 === g2) {
+    // Same group — find the head-to-head fixture
+    const fx = (DATA.fixtures[t1] || []).find(f => f.opp === t2);
+    if (fx) {
+      return {
+        type: 'group',
+        text: `Group ${g1} stage · <b>${fx.date_display}</b> at ${fx.stadium}, ${fx.city}`,
+      };
+    }
+    return {type: 'group', text: `Both in Group ${g1} — play during group stage`};
+  }
+  // Different groups → can only meet in knockouts
+  return {
+    type: 'knockout',
+    text: `Different groups (${g1} vs ${g2}) — <b>earliest possible meeting: Round of 32</b> (Jun 28 – Jul 3). Final bracket pairing depends on group standings.`,
+  };
 }
 // Pick the user-friendly Over/Under line a sportsbook would actually display.
 // Strategy:
@@ -949,27 +972,51 @@ function renderBets(){
     );
   }
 
-  let valueBetsHTML = '<h3>Projected Value Bets';
+  // Meeting context — when can these two teams actually play?
+  const meeting = getMeetingContext(team1, team2);
+  const meetingHTML = meeting
+    ? `<div style="font-size:12px;color:var(--gray4);padding:8px 12px;background:var(--gray1);border-radius:6px;margin:8px 0 12px 0"><i class="ti ti-calendar"></i> ${meeting.text}</div>`
+    : '';
+
+  // Convert a probability into American odds (no juice) — for Fair Line display
+  function probToAmerican(p){
+    if (!p || p >= 1 || p <= 0) return '—';
+    if (p >= 0.5) return '-' + Math.round(100 * (p / (1 - p)));
+    return '+' + Math.round(100 * ((1 - p) / p));
+  }
+
+  let valueBetsHTML;
   if (!matchOdds) {
-    // No market data: show sample / placeholder
-    valueBetsHTML += ' <span class="badge">SAMPLE</span></h3>';
-    valueBetsHTML += '<div style="font-size:13px;color:var(--gray4);padding:8px 0">No sportsbook market available for this fixture yet. Lines typically open ~7 days before kickoff.</div>';
+    // No market data → show FAIR LINE ESTIMATE (no edge, no SAMPLE label)
+    valueBetsHTML = '<h3>Fair Line Estimate</h3>';
+    valueBetsHTML += meetingHTML;
+    valueBetsHTML += '<div style="font-size:13px;color:var(--gray4);padding:4px 0 12px 0">No sportsbook market available for this matchup yet. Lines shown are our model\'s fair estimate — no edge to compute until sportsbooks open this market.</div>';
     valueBetsHTML += `
       <div class="value-bet">
-        <div class="grade A">A</div>
-        <div class="bet-desc">${team1} Win <small>vs ${team2}</small></div>
-        <div class="bet-odds">+125</div>
-        <div class="bet-edge">+6.2%</div>
+        <div class="bet-desc"><b>${team1}</b> Win <small>vs ${team2}</small></div>
+        <div class="bet-odds">${probToAmerican(trueP_team1)}</div>
       </div>
       <div class="value-bet">
-        <div class="grade B">B</div>
+        <div class="bet-desc">Draw <small>${team1} vs ${team2}</small></div>
+        <div class="bet-odds">${probToAmerican(trueP_draw)}</div>
+      </div>
+      <div class="value-bet">
+        <div class="bet-desc"><b>${team2}</b> Win <small>vs ${team1}</small></div>
+        <div class="bet-odds">${probToAmerican(trueP_team2)}</div>
+      </div>
+      <div class="value-bet">
         <div class="bet-desc">Over 2.5 Goals <small>${team1} vs ${team2}</small></div>
-        <div class="bet-odds">-110</div>
-        <div class="bet-edge">+4.1%</div>
+        <div class="bet-odds">${probToAmerican(trueP_over25)}</div>
+      </div>
+      <div class="value-bet">
+        <div class="bet-desc">Under 2.5 Goals <small>${team1} vs ${team2}</small></div>
+        <div class="bet-odds">${probToAmerican(trueP_under25)}</div>
       </div>`;
+    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Fair Lines · <b>${model.sourceLabel}</b></div>`;
   } else {
     // Real market data — build candidate bets, compute edges, sort by edge
-    valueBetsHTML += ' <span class="badge" style="background:var(--green);color:#fff">LIVE</span></h3>';
+    valueBetsHTML = '<h3>Projected Value Bets</h3>';
+    valueBetsHTML += meetingHTML;
     const homeIsTeam1 = matchOdds.home === team1;
     const c = matchOdds.consensus || {};
     const candidates = [];
@@ -1008,34 +1055,10 @@ function renderBets(){
         <div class="bet-edge">${edgeStr}</div>
       </div>`;
     }).join('');
-    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Consensus across ${matchOdds.books.length} book${matchOdds.books.length===1?'':'s'} · ${matchOdds.books.slice(0,3).join(', ')}${matchOdds.books.length>3?', +'+(matchOdds.books.length-3):''}<br>True prob model: <b>${model.sourceLabel}</b></div>`;
+    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Consensus Odds · <b>${model.sourceLabel}</b></div>`;
   }
   $('valueBetsCard').innerHTML = valueBetsHTML;
 
-  // Dynamic disclaimer reflects actual data state
-  const disclaimer = $('betsDisclaimer');
-  if (disclaimer) {
-    const haveMatchOdds = window.MATCH_ODDS && window.MATCH_ODDS.length > 0;
-    const haveOutrights = window.WINNER_OUTRIGHTS && window.WINNER_OUTRIGHTS.consensus && Object.keys(window.WINNER_OUTRIGHTS.consensus).length > 10;
-    const haveProjections = window.MATCH_PROJECTIONS && window.MATCH_PROJECTIONS.length > 0;
-    let parts = ['<i class="ti ti-info-circle"></i>'];
-    if (haveProjections) {
-      parts.push(`Matchup projections by <b>Action Network · Nick Giffen</b> (${window.MATCH_PROJECTIONS.length} fixtures).`);
-    } else {
-      parts.push('Matchup projections use internal Elo-Poisson estimate (Action Network model not yet loaded).');
-    }
-    parts.push('Tournament-winner model: <b>BETSiE</b> (May 30, 2026 baseline).');
-    if (haveMatchOdds) {
-      parts.push(`Value bets calibrated against ${window.MATCH_ODDS.length} live sportsbook events.`);
-    } else {
-      parts.push('Sportsbook lines pending — value bets shown as SAMPLE until live odds load.');
-    }
-    if (haveOutrights) {
-      const bookCt = (window.WINNER_OUTRIGHTS.books || []).length;
-      parts.push(`Market consensus from ${bookCt} book${bookCt===1?'':'s'}.`);
-    }
-    disclaimer.innerHTML = parts.join(' ');
-  }
   // Tournament futures — 2-card with implied odds, market context below
   const w1 = BETSIE_WIN[team1] || betsiePath(team1).winWC;
   const w2 = BETSIE_WIN[team2] || betsiePath(team2).winWC;
@@ -1044,13 +1067,8 @@ function renderBets(){
     if (p >= 0.5) return Math.round(-100 / (1/p - 1));
     return '+' + Math.round(100 * (1/p - 1));
   }
-  // Find tournament favorite from BETSIE_WIN
-  const favEntries = Object.entries(BETSIE_WIN).sort((a,b)=>b[1]-a[1]);
-  const fav = favEntries[0];
-  const favTeam = fav[0], favPct = fav[1];
-  const favMeta = TEAM_META[favTeam] || {flag:'⚽'};
   $('futuresCard').innerHTML = `
-    <h3>Tournament Futures (BETSiE)</h3>
+    <h3>Tournament Futures (via Action)</h3>
     <div class="future-grid future-grid-2">
       <div class="future-card t1">
         <div class="label">Win World Cup</div>
@@ -1064,11 +1082,6 @@ function renderBets(){
         <div class="pct">${(w2*100).toFixed(1)}%</div>
         <div class="implied">Implied odds: ${impliedAmerican(w2)}</div>
       </div>
-    </div>
-    <div class="market-context">
-      <span class="market-label">Tournament favorite</span>
-      <span class="market-value">${favMeta.flag} ${favTeam}</span>
-      <span class="market-pct">${(favPct*100).toFixed(1)}%</span>
     </div>
   `;
 
