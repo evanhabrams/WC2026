@@ -505,6 +505,8 @@ async function loadLiveData(){
     // Capture odds data (added Jun 4 — populated by update_live_data.py --odds)
     if (Array.isArray(live.match_odds)) window.MATCH_ODDS = live.match_odds;
     if (live.winner_outrights) window.WINNER_OUTRIGHTS = live.winner_outrights;
+    // Capture Giffen xG projections (added Jun 4 — populated by update_live_data.py --giffen)
+    if (Array.isArray(live.match_projections)) window.MATCH_PROJECTIONS = live.match_projections;
     // Show a small "live data" indicator if successful
     const ts = live.updated_at ? new Date(live.updated_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
     console.log('Live data loaded · updated ' + ts);
@@ -565,6 +567,79 @@ function setCSSVars(){
 
 function fmt(n, d=1){ return typeof n === 'number' ? n.toFixed(d) : '—'; }
 
+// === SHARED MATCHUP MODEL ===
+// Returns {p1adj, p_draw, p2adj, g1proj, g2proj, source, sourceLabel}
+// Tries Giffen xG projections first (Action Network model), falls back to Elo Poisson.
+// Used by both Matchup and Bets tabs so projections + probabilities are consistent everywhere.
+function poissonPMF(k, lam){
+  // P(X = k | lambda) — manual computation, no factorials over 12 needed
+  let p = Math.exp(-lam);
+  for (let i = 1; i <= k; i++) p *= lam / i;
+  return p;
+}
+function poissonCDF_local(k, lam){
+  let s = 0;
+  for (let i = 0; i <= k; i++) s += poissonPMF(i, lam);
+  return s;
+}
+function findGiffenProjection(t1, t2){
+  if (!window.MATCH_PROJECTIONS) return null;
+  return window.MATCH_PROJECTIONS.find(p =>
+    (p.home === t1 && p.away === t2) || (p.home === t2 && p.away === t1)
+  );
+}
+function computeMatchupModel(t1, t2){
+  const t1m = TEAM_META[t1], t2m = TEAM_META[t2];
+  // === Try Giffen xG first ===
+  const proj = findGiffenProjection(t1, t2);
+  if (proj && proj.xg_h != null && proj.xg_a != null) {
+    // Determine which xG goes to which team based on home/away orientation
+    const t1IsHome = (proj.home === t1);
+    const lam1 = t1IsHome ? proj.xg_h : proj.xg_a;
+    const lam2 = t1IsHome ? proj.xg_a : proj.xg_h;
+    // Compute W/D/L from bivariate independent Poisson, summing P(i,j) over scorelines
+    let pHome = 0, pAway = 0, pDraw = 0;
+    const maxGoals = 8;
+    for (let i = 0; i <= maxGoals; i++){
+      const ph = poissonPMF(i, lam1);
+      for (let j = 0; j <= maxGoals; j++){
+        const pa = poissonPMF(j, lam2);
+        const cell = ph * pa;
+        if (i > j) pHome += cell;
+        else if (i < j) pAway += cell;
+        else pDraw += cell;
+      }
+    }
+    // Normalize tiny rounding tail
+    const tot = pHome + pAway + pDraw;
+    return {
+      p1adj: pHome / tot,
+      p_draw: pDraw / tot,
+      p2adj: pAway / tot,
+      g1proj: lam1,
+      g2proj: lam2,
+      source: 'giffen',
+      sourceLabel: 'ACTION xG',
+      gameNo: proj.game_no,
+    };
+  }
+  // === Fall back to Elo ===
+  const eloDiff = (t1m.elo - t2m.elo) + 30;
+  const p1raw = 1/(1+Math.pow(10, -eloDiff/400));
+  const p_draw = 0.24 * (1 - Math.abs(p1raw - 0.5)*2 * 0.6);
+  const eloFactor = Math.max(-1.5, Math.min(1.5, (t1m.elo - t2m.elo)/250));
+  return {
+    p1adj: p1raw * (1 - p_draw),
+    p_draw: p_draw,
+    p2adj: (1-p1raw) * (1 - p_draw),
+    g1proj: 1.4 + eloFactor*0.4,
+    g2proj: 1.4 - eloFactor*0.4,
+    source: 'elo',
+    sourceLabel: 'Elo estimate',
+    gameNo: null,
+  };
+}
+
 function renderAll(){
   setCSSVars();
   renderMatchup();
@@ -577,16 +652,14 @@ function renderAll(){
 function renderMatchup(){
   const t1m = TEAM_META[team1], t2m = TEAM_META[team2];
   const f1 = DATA.fixtures[team1]?.[0], f2 = DATA.fixtures[team2]?.[0];
-  // Elo-based win probability
-  const eloDiff = (t1m.elo - t2m.elo) + 30; // home/neutral adjustment minimal
-  const p1 = 1/(1+Math.pow(10, -eloDiff/400));
-  const p_draw = 0.24 * (1 - Math.abs(p1 - 0.5)*2 * 0.6);
-  const p1adj = p1 * (1 - p_draw);
-  const p2adj = (1-p1) * (1 - p_draw);
-  // Projected score (simple Poisson-ish based on Elo diff)
-  const eloFactor = Math.max(-1.5, Math.min(1.5, (t1m.elo - t2m.elo)/250));
-  const g1proj = 1.4 + eloFactor*0.4;
-  const g2proj = 1.4 - eloFactor*0.4;
+  // Unified model: Giffen xG (Action Network) if available, else Elo Poisson
+  const model = computeMatchupModel(team1, team2);
+  const p1 = model.source === 'giffen' ? (model.p1adj + model.p_draw/2) : (1/(1+Math.pow(10, -(((t1m.elo - t2m.elo) + 30)/400))));
+  const p_draw = model.p_draw;
+  const p1adj = model.p1adj;
+  const p2adj = model.p2adj;
+  const g1proj = model.g1proj;
+  const g2proj = model.g2proj;
 
   // Scoreboard
   $('scoreboardCard').innerHTML = `
@@ -614,6 +687,12 @@ function renderMatchup(){
     <div class="score-meta">
       <span><i class="ti ti-calendar-event"></i> ${team1} starts ${f1?.date_display || 'TBD'}</span>
       <span>${team2} starts ${f2?.date_display || 'TBD'} <i class="ti ti-calendar-event"></i></span>
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:8px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray4)">
+      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;background:${model.source === 'giffen' ? 'rgba(0,200,83,0.12)' : 'var(--gray1)'};color:${model.source === 'giffen' ? 'var(--green)' : 'var(--gray4)'};font-weight:700">
+        <i class="ti ti-${model.source === 'giffen' ? 'sparkles' : 'chart-line'}"></i>
+        ${model.sourceLabel}${model.gameNo ? ' · Game #' + model.gameNo : ''}
+      </span>
     </div>
   `;
 
@@ -722,16 +801,13 @@ function renderFixturesCard(elId, team, meta){
 function renderBets(){
   const t1m = TEAM_META[team1], t2m = TEAM_META[team2];
 
-  // === Compute Elo-derived true probabilities (same model as Matchup tab) ===
-  const eloDiff = (t1m.elo - t2m.elo) + 30;
-  const p1raw = 1/(1+Math.pow(10, -eloDiff/400));
-  const p_draw = 0.24 * (1 - Math.abs(p1raw - 0.5)*2 * 0.6);
-  const trueP_team1 = p1raw * (1 - p_draw);
-  const trueP_team2 = (1-p1raw) * (1 - p_draw);
-  const trueP_draw = p_draw;
-  const eloFactor = Math.max(-1.5, Math.min(1.5, (t1m.elo - t2m.elo)/250));
-  const lam1 = 1.4 + eloFactor*0.4;
-  const lam2 = 1.4 - eloFactor*0.4;
+  // === Use shared model (Giffen xG if available, else Elo) ===
+  const model = computeMatchupModel(team1, team2);
+  const trueP_team1 = model.p1adj;
+  const trueP_team2 = model.p2adj;
+  const trueP_draw = model.p_draw;
+  const lam1 = model.g1proj;
+  const lam2 = model.g2proj;
   const lamTotal = lam1 + lam2;
   // Poisson P(X≤k | λ): P(X=k) = λ^k * e^-λ / k!
   function poissonCDF(k, lam) {
@@ -824,7 +900,7 @@ function renderBets(){
         <div class="bet-edge">${edgeStr}</div>
       </div>`;
     }).join('');
-    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Consensus across ${matchOdds.books.length} book${matchOdds.books.length===1?'':'s'} · ${matchOdds.books.slice(0,3).join(', ')}${matchOdds.books.length>3?', +'+(matchOdds.books.length-3):''}</div>`;
+    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Consensus across ${matchOdds.books.length} book${matchOdds.books.length===1?'':'s'} · ${matchOdds.books.slice(0,3).join(', ')}${matchOdds.books.length>3?', +'+(matchOdds.books.length-3):''}<br>True prob model: <b>${model.sourceLabel}</b>${model.gameNo ? ' (Game #' + model.gameNo + ')' : ''}</div>`;
   }
   $('valueBetsCard').innerHTML = valueBetsHTML;
 
@@ -833,15 +909,22 @@ function renderBets(){
   if (disclaimer) {
     const haveMatchOdds = window.MATCH_ODDS && window.MATCH_ODDS.length > 0;
     const haveOutrights = window.WINNER_OUTRIGHTS && window.WINNER_OUTRIGHTS.consensus && Object.keys(window.WINNER_OUTRIGHTS.consensus).length > 10;
-    let parts = ['<i class="ti ti-info-circle"></i> Tournament-winner projections use BETSiE model (May 30, 2026 baseline).'];
-    if (haveMatchOdds) {
-      parts.push(`Matchup value bets calibrated against ${window.MATCH_ODDS.length} live sportsbook events.`);
+    const haveProjections = window.MATCH_PROJECTIONS && window.MATCH_PROJECTIONS.length > 0;
+    let parts = ['<i class="ti ti-info-circle"></i>'];
+    if (haveProjections) {
+      parts.push(`Matchup projections by <b>Action Network · Nick Giffen</b> (${window.MATCH_PROJECTIONS.length} fixtures).`);
     } else {
-      parts.push('Matchup-level sportsbook lines pending — value bets shown as SAMPLE until live odds load.');
+      parts.push('Matchup projections use internal Elo-Poisson estimate (Action Network model not yet loaded).');
+    }
+    parts.push('Tournament-winner model: <b>BETSiE</b> (May 30, 2026 baseline).');
+    if (haveMatchOdds) {
+      parts.push(`Value bets calibrated against ${window.MATCH_ODDS.length} live sportsbook events.`);
+    } else {
+      parts.push('Sportsbook lines pending — value bets shown as SAMPLE until live odds load.');
     }
     if (haveOutrights) {
       const bookCt = (window.WINNER_OUTRIGHTS.books || []).length;
-      parts.push(`Tournament-winner market consensus from ${bookCt} book${bookCt===1?'':'s'}.`);
+      parts.push(`Market consensus from ${bookCt} book${bookCt===1?'':'s'}.`);
     }
     disclaimer.innerHTML = parts.join(' ');
   }
