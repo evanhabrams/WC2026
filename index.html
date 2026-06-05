@@ -336,7 +336,7 @@ footer{text-align:center;padding:18px;color:var(--gray4);font-size:10px;border-t
       <span class="check">✓</span>
       <div class="app-title">ACTION WC 26</div>
     </div>
-    <div class="countdown"><span class="n" id="cdDays">9</span><span>DAYS</span></div>
+    <div class="countdown" id="cdWrap"><span class="n" id="cdDays">—</span><span id="cdLabel">DAYS</span></div>
   </div>
 </header>
 
@@ -551,11 +551,41 @@ function initApp(){
       $('tab-' + btn.dataset.tab).classList.add('active');
     });
   });
-  // Countdown to June 11, 2026
-  const today = new Date('2026-06-02');
-  const kickoff = new Date('2026-06-11');
-  const days = Math.ceil((kickoff - today) / 86400000);
-  $('cdDays').textContent = days;
+  // Live countdown to Jun 11, 2026 11:00 AM PT (Mexico vs South Africa kickoff @ Estadio Azteca)
+  // PT = UTC-7 in June (PDT) → 18:00 UTC
+  function updateCountdown(){
+    const kickoff = new Date('2026-06-11T18:00:00Z');
+    const now = new Date();
+    const diffMs = kickoff - now;
+    const cdDays = $('cdDays'), cdLabel = $('cdLabel');
+    if (!cdDays || !cdLabel) return;
+    if (diffMs <= 0) {
+      // Tournament started — show LIVE
+      cdDays.textContent = '';
+      cdLabel.textContent = 'LIVE';
+      cdLabel.style.color = 'var(--red, #e74c3c)';
+      return;
+    }
+    const totalMin = Math.floor(diffMs / 60000);
+    const days = Math.floor(totalMin / 1440);
+    const hours = Math.floor((totalMin % 1440) / 60);
+    const mins = totalMin % 60;
+    if (days >= 2) {
+      cdDays.textContent = days;
+      cdLabel.textContent = 'DAYS';
+    } else if (days === 1) {
+      cdDays.textContent = `1d ${hours}h`;
+      cdLabel.textContent = 'TO GO';
+    } else if (hours >= 1) {
+      cdDays.textContent = `${hours}h ${mins}m`;
+      cdLabel.textContent = 'TO GO';
+    } else {
+      cdDays.textContent = `${mins}m`;
+      cdLabel.textContent = 'TO GO';
+    }
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 60000); // refresh every minute
   renderAll();
 }
 
@@ -619,7 +649,7 @@ function computeMatchupModel(t1, t2){
       g1proj: lam1,
       g2proj: lam2,
       source: 'giffen',
-      sourceLabel: 'ACTION xG',
+      sourceLabel: 'Powered by Action',
       gameNo: proj.game_no,
     };
   }
@@ -635,7 +665,7 @@ function computeMatchupModel(t1, t2){
     g1proj: 1.4 + eloFactor*0.4,
     g2proj: 1.4 - eloFactor*0.4,
     source: 'elo',
-    sourceLabel: 'Elo estimate',
+    sourceLabel: 'Powered by Evan',
     gameNo: null,
   };
 }
@@ -675,7 +705,7 @@ function renderMatchup(){
         <div class="score-mid-val">${(g1proj+g2proj).toFixed(1)}</div>
         <div class="score-mid-label" style="margin-top:6px">LINE</div>
         <div class="score-mid-val">${g1proj > g2proj ? team1.slice(0,3).toUpperCase() : team2.slice(0,3).toUpperCase()} ${Math.abs(g1proj - g2proj).toFixed(1)}</div>
-        <div class="score-mid-pill">OVER</div>
+        <div class="score-mid-pill" style="${(g1proj+g2proj) < 2.5 ? 'background:var(--gray2);color:var(--gray4)' : ''}">${(g1proj+g2proj) >= 2.5 ? 'OVER' : 'UNDER'}</div>
       </div>
       <div class="score-team t2">
         <div class="score-flag">${t2m.flag}</div>
@@ -691,7 +721,7 @@ function renderMatchup(){
     <div style="display:flex;justify-content:center;margin-top:8px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray4)">
       <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;background:${model.source === 'giffen' ? 'rgba(0,200,83,0.12)' : 'var(--gray1)'};color:${model.source === 'giffen' ? 'var(--green)' : 'var(--gray4)'};font-weight:700">
         <i class="ti ti-${model.source === 'giffen' ? 'sparkles' : 'chart-line'}"></i>
-        ${model.sourceLabel}${model.gameNo ? ' · Game #' + model.gameNo : ''}
+        ${model.source === 'giffen' ? 'Powered by Action' : 'Powered by Evan'}
       </span>
     </div>
   `;
@@ -700,7 +730,7 @@ function renderMatchup(){
   $('winprobCard').innerHTML = `
     <div class="winprob-header">
       <span>Match Win Probability</span>
-      <span class="winprob-source">ELO-derived · Action Network model</span>
+      <span class="winprob-source">${model.source === 'giffen' ? 'Powered by Action' : 'Powered by Evan'}</span>
     </div>
     <div class="winprob-bar">
       <div class="winprob-seg t1" style="width:${(p1adj*100).toFixed(0)}%">${(p1adj*100).toFixed(0)}%</div>
@@ -708,7 +738,9 @@ function renderMatchup(){
       <div class="winprob-seg t2" style="width:${(p2adj*100).toFixed(0)}%">${(p2adj*100).toFixed(0)}%</div>
     </div>
     <div class="winprob-labels">
-      <span>${team1} win</span><span>Draw</span><span>${team2} win</span>
+      <span style="display:inline-flex;align-items:center;gap:6px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--t1-color)"></span>${team1} win</span>
+      <span style="display:inline-flex;align-items:center;gap:6px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--gray3)"></span>Draw</span>
+      <span style="display:inline-flex;align-items:center;gap:6px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--t2-color)"></span>${team2} win</span>
     </div>
   `;
 
@@ -900,7 +932,7 @@ function renderBets(){
         <div class="bet-edge">${edgeStr}</div>
       </div>`;
     }).join('');
-    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Consensus across ${matchOdds.books.length} book${matchOdds.books.length===1?'':'s'} · ${matchOdds.books.slice(0,3).join(', ')}${matchOdds.books.length>3?', +'+(matchOdds.books.length-3):''}<br>True prob model: <b>${model.sourceLabel}</b>${model.gameNo ? ' (Game #' + model.gameNo + ')' : ''}</div>`;
+    valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Consensus across ${matchOdds.books.length} book${matchOdds.books.length===1?'':'s'} · ${matchOdds.books.slice(0,3).join(', ')}${matchOdds.books.length>3?', +'+(matchOdds.books.length-3):''}<br>True prob model: <b>${model.sourceLabel}</b></div>`;
   }
   $('valueBetsCard').innerHTML = valueBetsHTML;
 
