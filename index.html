@@ -385,9 +385,16 @@ footer{text-align:center;padding:18px;color:var(--gray4);font-size:15px;border-t
 .squad-player.standout{background:rgba(0,200,83,0.08);border-color:var(--green)}
 .squad-player.standout .pname{color:var(--green-dark)}
 .setpieces-section{margin-top:14px;padding-top:12px;border-top:1px solid var(--gray2)}
-.setpieces-section h4{font-size:15px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray4);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.setpieces-source{margin-left:auto;font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--gray4);text-decoration:none;display:inline-flex;align-items:center;gap:3px}
-.setpieces-source:hover{color:var(--navy);text-decoration:underline}
+.setpieces-section h4{font-size:15px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray4);font-weight:700;margin-bottom:6px}
+.setpieces-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.setpieces-top-left{flex:1;min-width:220px}
+.setpieces-source-pill{display:inline-flex;align-items:center;gap:10px;padding:9px 12px;background:#fff;border:1px solid var(--gray2);border-radius:8px;text-decoration:none;color:var(--navy);font-size:13px;line-height:1.3;max-width:300px;transition:all 0.15s;flex-shrink:0}
+.setpieces-source-pill:hover{border-color:var(--navy);background:var(--gray1);box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.sp-pill-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sp-pill-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray4)}
+.sp-pill-title{font-size:12px;font-weight:600;color:var(--navy);line-height:1.3}
+.sp-pill-icon{color:var(--gray4);font-size:16px;flex-shrink:0}
+.setpieces-source-pill:hover .sp-pill-icon{color:var(--navy)}
 .setpieces-sub{font-size:13px;font-weight:600;color:var(--gray4);text-transform:uppercase;letter-spacing:0.4px;margin:8px 0 4px 0}
 .setpieces-sub:first-child{margin-top:0}
 .setpieces-sub-hint{font-weight:500;text-transform:none;letter-spacing:0;color:var(--gray3);font-size:12px}
@@ -1611,8 +1618,19 @@ function renderSquadCard(elId, team){
     }).join('');
     spHtml = `
       <div class="setpieces-section">
-        <h4>Set Pieces <a class="setpieces-source" href="${SET_PIECES_SOURCE}" target="_blank" rel="noopener">Action Network <i class="ti ti-external-link"></i></a></h4>
-        <div class="setpieces-note">Players ranked by pecking order leading up to the tournament. Numbers in parentheses are 2026 WC qualifying stats.</div>
+        <div class="setpieces-top">
+          <div class="setpieces-top-left">
+            <h4>Set Pieces</h4>
+            <div class="setpieces-note">Players ranked by pecking order leading up to the tournament. Numbers in parentheses are 2026 WC qualifying stats.</div>
+          </div>
+          <a class="setpieces-source-pill" href="${SET_PIECES_SOURCE}" target="_blank" rel="noopener">
+            <div class="sp-pill-text">
+              <span class="sp-pill-label">Action Network</span>
+              <span class="sp-pill-title">2026 WC Set Piece Takers for Every National Team</span>
+            </div>
+            <i class="ti ti-external-link sp-pill-icon"></i>
+          </a>
+        </div>
         <div class="setpieces-sub">Penalties <span class="setpieces-sub-hint">— qualifying goals</span></div>
         <div class="squad-players">${renderPens}</div>
         <div class="setpieces-sub">Corners / Free Kicks <span class="setpieces-sub-hint">— qualifying corners / free kicks taken</span></div>
