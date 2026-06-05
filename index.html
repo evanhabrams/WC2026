@@ -29,6 +29,9 @@ body{font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .app-title{font-family:'Saira Condensed';font-size:18px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
 .app-title-sub{font-size:10px;color:var(--gray3);letter-spacing:0.5px;text-transform:uppercase;font-weight:600;margin-top:-2px}
 .countdown{font-family:'Saira Condensed';font-weight:700;font-size:13px;color:var(--green);display:flex;align-items:center;gap:5px;background:rgba(0,200,83,0.1);padding:5px 10px;border-radius:6px;border:1px solid rgba(0,200,83,0.3)}
+.status-stack{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.last-updated{font-family:'Saira Condensed';font-weight:600;font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.4px}
+.last-updated span{color:rgba(255,255,255,0.85);font-weight:700}
 .countdown .n{color:#fff;font-size:18px}
 
 /* ===== TEAM PICKER ===== */
@@ -336,7 +339,10 @@ footer{text-align:center;padding:18px;color:var(--gray4);font-size:10px;border-t
       <span class="check">✓</span>
       <div class="app-title">ACTION WC 26</div>
     </div>
-    <div class="countdown" id="cdWrap"><span class="n" id="cdDays">—</span><span id="cdLabel">DAYS</span></div>
+    <div class="status-stack">
+      <div class="last-updated">Last Updated <span id="lastUpdated">—</span></div>
+      <div class="countdown" id="cdWrap"><span class="n" id="cdDays">—</span><span id="cdLabel">DAYS</span></div>
+    </div>
   </div>
 </header>
 
@@ -507,6 +513,8 @@ async function loadLiveData(){
     if (live.winner_outrights) window.WINNER_OUTRIGHTS = live.winner_outrights;
     // Capture Giffen xG projections (added Jun 4 — populated by update_live_data.py --giffen)
     if (Array.isArray(live.match_projections)) window.MATCH_PROJECTIONS = live.match_projections;
+    // Capture timestamp for header display
+    if (live.updated_at) window.LAST_UPDATED = live.updated_at;
     // Show a small "live data" indicator if successful
     const ts = live.updated_at ? new Date(live.updated_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
     console.log('Live data loaded · updated ' + ts);
@@ -584,7 +592,34 @@ function initApp(){
       cdLabel.textContent = 'TO GO';
     }
   }
+  // Format Last Updated timestamp as "M/D, ha ET" (e.g. "6/5, 12a ET")
+  function updateLastUpdated(){
+    const el = $('lastUpdated');
+    if (!el) return;
+    const iso = window.LAST_UPDATED || (DATA && DATA.updated_at);
+    if (!iso) { el.textContent = '—'; return; }
+    try {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) { el.textContent = '—'; return; }
+      const fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        month: 'numeric', day: 'numeric',
+        hour: 'numeric', hour12: true,
+      });
+      const parts = fmt.formatToParts(d);
+      const get = (t) => (parts.find(p => p.type === t) || {}).value || '';
+      const month = get('month');
+      const day = get('day');
+      const hour = get('hour');
+      const period = (get('dayPeriod') || 'AM').toLowerCase();
+      const aOrP = period.charAt(0); // 'a' or 'p'
+      el.textContent = `${month}/${day}, ${hour}${aOrP} ET`;
+    } catch(e) {
+      el.textContent = '—';
+    }
+  }
   updateCountdown();
+  updateLastUpdated();
   setInterval(updateCountdown, 60000); // refresh every minute
   renderAll();
 }
