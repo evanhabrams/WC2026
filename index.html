@@ -1407,22 +1407,22 @@ function renderForm(){
   const dots1 = fr1.length ? fr1.map(f => `<span class="form-dot ${f.result}" data-tooltip="${f.date} vs ${f.opp} · ${f.gf}-${f.ga}">${f.result}</span>`).join('') : '<span class="form-empty">No pre-WC friendlies yet</span>';
   const dots2 = fr2.length ? fr2.map(f => `<span class="form-dot ${f.result}" data-tooltip="${f.date} vs ${f.opp} · ${f.gf}-${f.ga}">${f.result}</span>`).join('') : '<span class="form-empty">No pre-WC friendlies yet</span>';
   // Detailed friendly list (last 5)
-  const list1 = fr1.length ? [...fr1].reverse().slice(0,5).map(f => `
+  const list1 = fr1.length ? [...fr1].reverse().slice(0,10).map(f => `
     <div class="friendly-detail">
       <span class="friendly-detail-date">${f.date}</span>
       <span class="friendly-detail-opp">vs <strong>${f.opp}</strong></span>
       <span class="friendly-detail-score">${f.gf}-${f.ga}</span>
       <span class="friendly-detail-result ${f.result}">${f.result}</span>
-    </div>`).join('') : '<div style="padding:10px;color:#6B7280;font-size:17px">No friendlies played yet — first matches Jun 4-10</div>';
-  const list2 = fr2.length ? [...fr2].reverse().slice(0,5).map(f => `
+    </div>`).join('') : '<div style="padding:10px;color:#6B7280;font-size:17px">No recent matches available</div>';
+  const list2 = fr2.length ? [...fr2].reverse().slice(0,10).map(f => `
     <div class="friendly-detail">
       <span class="friendly-detail-date">${f.date}</span>
       <span class="friendly-detail-opp">vs <strong>${f.opp}</strong></span>
       <span class="friendly-detail-score">${f.gf}-${f.ga}</span>
       <span class="friendly-detail-result ${f.result}">${f.result}</span>
-    </div>`).join('') : '<div style="padding:10px;color:#6B7280;font-size:17px">No friendlies played yet — first matches Jun 4-10</div>';
+    </div>`).join('') : '<div style="padding:10px;color:#6B7280;font-size:17px">No recent matches available</div>';
   $('recentFriendliesCard').innerHTML = `
-    <h3>Pre-WC Form · last ${Math.max(fr1.length, fr2.length, 5)}</h3>
+    <h3>Form: Last 10 Matches</h3>
     <div class="form-team-block">
       <div class="form-team-header">
         <span class="flag">${t1m.flag}</span> <span class="name">${team1}</span>
