@@ -69,6 +69,21 @@ body{font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .score-team.t1::before{--bg:var(--t1-color)}
 .score-team.t2::before{--bg:var(--t2-color)}
 .score-team>*{position:relative;z-index:1}
+/* === FAIR LINE ESTIMATE grid (landscape layout for no-market matchups) === */
+.fair-grid{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.fair-row{display:grid;gap:8px}
+.fair-row-3{grid-template-columns:1fr 1fr 1fr}
+.fair-row-2{grid-template-columns:1fr 1fr}
+.fair-cell{position:relative;border-radius:10px;padding:14px 10px;text-align:center;background:#fff;border:1px solid var(--gray2);overflow:hidden}
+.fair-cell::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--bg,transparent) 0%,transparent 100%);opacity:0.20;z-index:0}
+.fair-cell.t1::before{--bg:var(--t1-color)}
+.fair-cell.t2::before{--bg:var(--t2-color)}
+.fair-cell.draw::before{--bg:var(--gray3)}
+.fair-cell.ou::before{--bg:var(--gray3)}
+.fair-cell>*{position:relative;z-index:1}
+.fair-cell-flag{font-size:24px;line-height:1;margin-bottom:6px}
+.fair-cell-label{font-size:11px;color:var(--gray4);text-transform:uppercase;font-weight:700;letter-spacing:0.3px;margin-bottom:6px}
+.fair-cell-line{font-family:'Saira Condensed';font-size:26px;font-weight:800;color:var(--navy);line-height:1}
 .score-flag{font-size:42px;line-height:1}
 .score-name{font-family:'Saira Condensed';font-size:18px;font-weight:800;letter-spacing:0.5px;text-align:center;text-transform:uppercase}
 .score-rank{font-size:11px;color:var(--gray4);font-weight:600;letter-spacing:0.3px}
@@ -991,25 +1006,34 @@ function renderBets(){
     valueBetsHTML += meetingHTML;
     valueBetsHTML += '<div style="font-size:13px;color:var(--gray4);padding:4px 0 12px 0">No sportsbook market available for this matchup yet. Lines shown are our model\'s fair estimate — no edge to compute until sportsbooks open this market.</div>';
     valueBetsHTML += `
-      <div class="value-bet">
-        <div class="bet-desc"><b>${team1}</b> Win <small>vs ${team2}</small></div>
-        <div class="bet-odds">${probToAmerican(trueP_team1)}</div>
-      </div>
-      <div class="value-bet">
-        <div class="bet-desc">Draw <small>${team1} vs ${team2}</small></div>
-        <div class="bet-odds">${probToAmerican(trueP_draw)}</div>
-      </div>
-      <div class="value-bet">
-        <div class="bet-desc"><b>${team2}</b> Win <small>vs ${team1}</small></div>
-        <div class="bet-odds">${probToAmerican(trueP_team2)}</div>
-      </div>
-      <div class="value-bet">
-        <div class="bet-desc">Over 2.5 Goals <small>${team1} vs ${team2}</small></div>
-        <div class="bet-odds">${probToAmerican(trueP_over25)}</div>
-      </div>
-      <div class="value-bet">
-        <div class="bet-desc">Under 2.5 Goals <small>${team1} vs ${team2}</small></div>
-        <div class="bet-odds">${probToAmerican(trueP_under25)}</div>
+      <div class="fair-grid">
+        <div class="fair-row fair-row-3">
+          <div class="fair-cell t1">
+            <div class="fair-cell-flag">${t1m.flag}</div>
+            <div class="fair-cell-label">${team1} Win</div>
+            <div class="fair-cell-line">${probToAmerican(trueP_team1)}</div>
+          </div>
+          <div class="fair-cell draw">
+            <div class="fair-cell-flag" style="font-size:18px;color:var(--gray4);font-weight:700">—</div>
+            <div class="fair-cell-label">Draw</div>
+            <div class="fair-cell-line">${probToAmerican(trueP_draw)}</div>
+          </div>
+          <div class="fair-cell t2">
+            <div class="fair-cell-flag">${t2m.flag}</div>
+            <div class="fair-cell-label">${team2} Win</div>
+            <div class="fair-cell-line">${probToAmerican(trueP_team2)}</div>
+          </div>
+        </div>
+        <div class="fair-row fair-row-2">
+          <div class="fair-cell ou">
+            <div class="fair-cell-label">Over 2.5 Goals</div>
+            <div class="fair-cell-line">${probToAmerican(trueP_over25)}</div>
+          </div>
+          <div class="fair-cell ou">
+            <div class="fair-cell-label">Under 2.5 Goals</div>
+            <div class="fair-cell-line">${probToAmerican(trueP_under25)}</div>
+          </div>
+        </div>
       </div>`;
     valueBetsHTML += `<div style="font-size:11px;color:var(--gray4);margin-top:8px;text-align:right">Fair Lines · <b>${model.sourceLabel}</b></div>`;
   } else {
