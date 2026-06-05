@@ -84,12 +84,22 @@ body{font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .fair-cell-flag{font-size:24px;line-height:1;margin-bottom:6px}
 .fair-cell-label{font-size:16px;color:var(--gray4);text-transform:uppercase;font-weight:700;letter-spacing:0.3px;margin-bottom:6px}
 .fair-cell-line{font-family:'Saira Condensed';font-size:26px;font-weight:800;color:var(--navy);line-height:1}
-.score-flag{font-size:42px;line-height:1}
-.score-name{font-family:'Saira Condensed';font-size:22px;font-weight:800;letter-spacing:0.5px;text-align:center;text-transform:uppercase}
+/* === MEETING CONTEXT (compact 3-line layout for Fair Line Estimate) === */
+.meeting-compact{background:var(--gray1);border-radius:8px;padding:14px 16px;margin:8px 0 14px 0;display:flex;flex-direction:column;gap:10px}
+.meeting-groups{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.meeting-group{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:6px;font-weight:700;font-size:16px;color:var(--navy);position:relative;overflow:hidden;border:1px solid var(--gray2)}
+.meeting-group::before{content:"";position:absolute;inset:0;background:var(--bg,transparent);opacity:0.20;z-index:0}
+.meeting-group.t1::before{--bg:var(--t1-color)}
+.meeting-group.t2::before{--bg:var(--t2-color)}
+.meeting-group>*{position:relative;z-index:1}
+.meeting-when{font-size:16px;color:var(--navy);font-weight:600}
+.meeting-note{font-size:14px;color:var(--gray4);font-style:italic;border-top:1px solid var(--gray2);padding-top:10px;margin-top:0}
+.score-flag{font-size:56px;line-height:1}
+.score-name{font-family:'Saira Condensed';font-size:28px;font-weight:800;letter-spacing:0.5px;text-align:center;text-transform:uppercase}
 .score-rank{font-size:16px;color:var(--gray4);font-weight:600;letter-spacing:0.3px}
-.score-num{font-family:'Saira Condensed';font-size:48px;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-2px}
+.score-num{font-family:'Saira Condensed';font-size:60px;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-2px}
 .score-mid{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 12px;border-left:1px solid var(--gray2);border-right:1px solid var(--gray2);min-width:110px}
-.score-mid-label{font-size:15px;color:var(--gray4);text-transform:uppercase;letter-spacing:0.5px;font-weight:700}
+.score-mid-label{font-size:15px;color:var(--gray4);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;text-align:center}
 .score-mid-val{font-family:'Saira Condensed';font-size:22px;font-weight:800;color:var(--navy)}
 .score-mid-pill{background:var(--green);color:#fff;font-size:15px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.5px;text-transform:uppercase}
 .score-meta{margin-top:14px;padding-top:14px;border-top:1px solid var(--gray2);display:flex;justify-content:space-between;font-size:16px;color:var(--gray4);font-weight:600;flex-wrap:wrap;gap:6px}
@@ -241,10 +251,10 @@ body{font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   .main{padding:12px}
   .scoreboard{padding:14px;border-radius:12px}
   .score-grid{gap:6px}
-  .score-flag{font-size:32px}
-  .score-name{font-size:18px}
+  .score-flag{font-size:42px}
+  .score-name{font-size:22px}
   .score-rank{font-size:15px}
-  .score-num{font-size:36px}
+  .score-num{font-size:44px}
   .score-mid{padding:0 4px;min-width:60px}
   .score-mid-val{font-size:18px}
   .score-mid-pill{font-size:15px;padding:2px 5px}
@@ -670,7 +680,7 @@ function findGiffenProjection(t1, t2){
   );
 }
 // Determine when these two teams could meet in the tournament.
-// Returns {type, text} where type is 'group' (group-stage match) or 'knockout' (different groups).
+// Returns structured data for the renderer to format as needed.
 function getMeetingContext(t1, t2){
   if (!DATA || !DATA.teams || !DATA.fixtures) return null;
   const g1 = DATA.teams[t1] && DATA.teams[t1].group;
@@ -679,18 +689,23 @@ function getMeetingContext(t1, t2){
   if (g1 === g2) {
     // Same group — find the head-to-head fixture
     const fx = (DATA.fixtures[t1] || []).find(f => f.opp === t2);
-    if (fx) {
-      return {
-        type: 'group',
-        text: `Group ${g1} stage · <b>${fx.date_display}</b> at ${fx.stadium}, ${fx.city}`,
-      };
-    }
-    return {type: 'group', text: `Both in Group ${g1} — play during group stage`};
+    return {
+      type: 'group',
+      group1: g1,
+      group2: g2,
+      meetingRound: `Group ${g1} stage`,
+      meetingDate: fx ? fx.date_display : null,
+      venue: fx ? `${fx.stadium}, ${fx.city}` : null,
+    };
   }
-  // Different groups → can only meet in knockouts
+  // Different groups → knockout
   return {
     type: 'knockout',
-    text: `Different groups (${g1} vs ${g2}) — <b>earliest possible meeting: Round of 32</b> (Jun 28 – Jul 3). Final bracket pairing depends on group standings.`,
+    group1: g1,
+    group2: g2,
+    meetingRound: 'Round of 32',
+    meetingDate: 'Jun 28 – Jul 3',
+    venue: null,
   };
 }
 // Pick the user-friendly Over/Under line a sportsbook would actually display.
@@ -990,9 +1005,15 @@ function renderBets(){
 
   // Meeting context — when can these two teams actually play?
   const meeting = getMeetingContext(team1, team2);
-  const meetingHTML = meeting
-    ? `<div style="font-size:17px;color:var(--gray4);padding:8px 12px;background:var(--gray1);border-radius:6px;margin:8px 0 12px 0"><i class="ti ti-calendar"></i> ${meeting.text}</div>`
-    : '';
+  // For SAME-GROUP matchups (which have market data), keep the brief one-line context.
+  // For KNOCKOUT matchups (no market), we'll render a richer compact block inline in the Fair Line branch below.
+  let meetingHTML = '';
+  if (meeting && meeting.type === 'group') {
+    const text = meeting.venue
+      ? `Group ${meeting.group1} stage · <b>${meeting.meetingDate}</b> at ${meeting.venue}`
+      : `Both in Group ${meeting.group1} — play during group stage`;
+    meetingHTML = `<div style="font-size:17px;color:var(--gray4);padding:8px 12px;background:var(--gray1);border-radius:6px;margin:8px 0 12px 0"><i class="ti ti-calendar"></i> ${text}</div>`;
+  }
 
   // Convert a probability into American odds (no juice) — for Fair Line display
   function probToAmerican(p){
@@ -1005,8 +1026,24 @@ function renderBets(){
   if (!matchOdds) {
     // No market data → show FAIR LINE ESTIMATE (no edge, no SAMPLE label)
     valueBetsHTML = '<h3>Fair Line Estimate</h3>';
-    valueBetsHTML += meetingHTML;
-    valueBetsHTML += '<div style="font-size:18px;color:var(--gray4);padding:4px 0 12px 0">No sportsbook market available for this matchup yet. Lines shown are our model\'s fair estimate — no edge to compute until sportsbooks open this market.</div>';
+    if (meeting && meeting.type === 'knockout') {
+      // New compact block: team-tinted group pills + meeting round + no-market note
+      const t1abbr = team1.slice(0, 3).toUpperCase();
+      const t2abbr = team2.slice(0, 3).toUpperCase();
+      valueBetsHTML += `
+        <div class="meeting-compact">
+          <div class="meeting-groups">
+            <span class="meeting-group t1">${t1m.flag} <span>${t1abbr}: Group ${meeting.group1}</span></span>
+            <span class="meeting-group t2">${t2m.flag} <span>${t2abbr}: Group ${meeting.group2}</span></span>
+          </div>
+          <div class="meeting-when"><b>Earliest possible meeting:</b> ${meeting.meetingRound} (${meeting.meetingDate})</div>
+          <div class="meeting-note">No sportsbook market available for this matchup yet</div>
+        </div>`;
+    } else {
+      // Same-group fallback (rare: no market data for group game) — show simple context + note
+      valueBetsHTML += meetingHTML;
+      valueBetsHTML += '<div style="font-size:14px;color:var(--gray4);padding:4px 0 12px 0;font-style:italic">No sportsbook market available for this matchup yet</div>';
+    }
     valueBetsHTML += `
       <div class="fair-grid">
         <div class="fair-row fair-row-3">
