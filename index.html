@@ -162,6 +162,8 @@ body{font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .context-card-flag{font-size:24px;line-height:1}
 .context-card-name{font-family:'Saira Condensed';font-weight:800;font-size:19px;text-transform:uppercase;letter-spacing:0.5px}
 .context-card-group{background:var(--gray2);color:var(--navy);font-size:17px;font-weight:800;padding:3px 8px;border-radius:3px;margin-left:auto}
+.context-row-sub{font-size:11px;color:var(--gray4);margin-top:-4px;margin-bottom:6px;padding-left:0;line-height:1.35}
+.manager-new-pill{display:inline-block;background:#FAEEDA;color:#854F0B;font-size:10px;font-weight:700;letter-spacing:0.3px;padding:2px 7px;border-radius:10px;margin-left:8px;vertical-align:middle;text-transform:uppercase}
 .context-row{display:flex;justify-content:space-between;padding:8px 0;font-size:18px;border-top:1px solid var(--gray2)}
 .context-row:first-of-type{border-top:none}
 .context-row .lbl{color:var(--gray4);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;font-size:17px}
@@ -504,6 +506,57 @@ const TEAM_META = {
   "Haiti":{flag:"🇭🇹",color:"#00209F",fifa:83,elo:1450,wcApps:1,prev:"DNQ"},
   "Panama":{flag:"🇵🇦",color:"#005AA7",fifa:53,elo:1620,wcApps:1,prev:"DNQ"},
   "New Zealand":{flag:"🇳🇿",color:"#000000",fifa:95,elo:1465,wcApps:2,prev:"DNQ"},
+};
+
+const MANAGERS = {
+  "Algeria":{name:"Vladimir Petkovi\u0107",since:"Since February 2024",since_date:"2024-02-01",prev_role:"Head coach of Bordeaux",nationality:"Bosnia and Herzegovina"},
+  "Argentina":{name:"Lionel Scaloni",since:"Since November 2018",since_date:"2018-11-01",prev_role:"Assistant coach of Argentina",nationality:"Argentina"},
+  "Australia":{name:"Tony Popovic",since:"Since September 2024",since_date:"2024-09-01",prev_role:"Head coach of Melbourne Victory",nationality:"Australia"},
+  "Austria":{name:"Ralf Rangnick",since:"Since May 2022",since_date:"2022-05-01",prev_role:"Head coach of Man United on an interim basis",nationality:"Germany"},
+  "Belgium":{name:"Rudi Garcia",since:"Since January 2025",since_date:"2025-01-01",prev_role:"Head coach of SSC Napoli",nationality:"France"},
+  "Bosnia and Herzegovina":{name:"Sergej Barbarez",since:"Since April 2024",since_date:"2024-04-01",prev_role:"First appointment",nationality:"Bosnia"},
+  "Brazil":{name:"Carlo Ancelotti",since:"Since May 2025",since_date:"2025-05-01",prev_role:"Head coach of Real Madrid",nationality:"Italy"},
+  "Canada":{name:"Jesse Marsch",since:"Since May 2024",since_date:"2024-05-01",prev_role:"Head coach of Leeds United",nationality:"USA"},
+  "Cape Verde":{name:"Bubista",since:"Since January 2020",since_date:"2020-01-01",prev_role:"Head coach of Batuque",nationality:"Cape Verde"},
+  "Colombia":{name:"N\u00e9stor Lorenzo",since:"Since July 2022",since_date:"2022-07-01",prev_role:"Head coach of Melgar (Peru)",nationality:"Argentina"},
+  "Croatia":{name:"Zlatko Dali\u0107",since:"Since October 2017",since_date:"2017-10-01",prev_role:"Head coach of Al Ain (UAE)",nationality:"Croatia"},
+  "Curacao":{name:"Dick Advocaat",since:"Since May 2026 (returned)",since_date:"2026-05-01",prev_role:"Head coach of ADO Den Haag",nationality:"Netherlands"},
+  "Czech Republic":{name:"Miroslav Koubek",since:"Since December 2025",since_date:"2025-12-01",prev_role:"FC Viktoria Plze\u0148",nationality:"Czechia"},
+  "DR Congo":{name:"S\u00e9bastien Desabre",since:"Since August 2022",since_date:"2022-08-01",prev_role:"Head coach of Chamois Niortais F.C. (Niort)",nationality:"France"},
+  "Ecuador":{name:"Sebasti\u00e1n Beccacece",since:"Since August 2024",since_date:"2024-08-01",prev_role:"Head coach of Elche",nationality:"Argentina"},
+  "Egypt":{name:"Hossam Hassan",since:"Since February 2024",since_date:"2024-02-01",prev_role:"Head coach of Modern Future",nationality:"Egypt"},
+  "England":{name:"Thomas Tuchel",since:"Since January 2025",since_date:"2025-01-01",prev_role:"Head coach of Bayern Munich",nationality:"Germany"},
+  "France":{name:"Didier Deschamps",since:"Since July 2012",since_date:"2012-07-01",prev_role:"Head coach of Olympique de Marseille",nationality:"France"},
+  "Germany":{name:"Julian Nagelsmann",since:"Since September 2023",since_date:"2023-09-01",prev_role:"Head coach of Bayern Munich",nationality:"Germany"},
+  "Ghana":{name:"Carlos Queiroz replaced Otto Addo*",since:"Since April 2026",since_date:"2026-04-01",prev_role:"Head coach of Oman",nationality:"Portugal"},
+  "Haiti":{name:"S\u00e9bastien Mign\u00e9",since:"Since June 2024",since_date:"2024-06-01",prev_role:"Assistant coach of Cameroon",nationality:"France"},
+  "Iran":{name:"Amir Ghalenoei",since:"Since March 2023",since_date:"2023-03-01",prev_role:"Head coach of Gol Gohar",nationality:"Iran"},
+  "Iraq":{name:"Graham Arnold",since:"Since May 2025",since_date:"2025-05-01",prev_role:"Head coach of Australia",nationality:"Australia"},
+  "Ivory Coast":{name:"Emerse Fa\u00e9",since:"Since January 2024",since_date:"2024-01-01",prev_role:"Head coach of Ivory Coast U23",nationality:"Ivory Coast"},
+  "Japan":{name:"Hajime Moriyasu",since:"Since July 2018",since_date:"2018-07-01",prev_role:"Head coach of Japan U23*",nationality:"Japan"},
+  "Jordan":{name:"Jamal Sellami",since:"Since June 2024",since_date:"2024-06-01",prev_role:"Head coach of FUS Rabat",nationality:"Morocco"},
+  "Mexico":{name:"Javier Aguirre",since:"Since July 2024",since_date:"2024-07-01",prev_role:"Head coach of Mallorca",nationality:"Mexico"},
+  "Morocco":{name:"Mohamed Ouahbi",since:"Since March 2026",since_date:"2026-03-01",prev_role:"Head coach of Morocco U23",nationality:"Morocco (born in Belgium)"},
+  "Netherlands":{name:"Ronald Koeman",since:"Since January 2023",since_date:"2023-01-01",prev_role:"Head coach of FC Barcelona",nationality:"Netherlands"},
+  "New Zealand":{name:"Darren Bazeley",since:"Since July 2023",since_date:"2023-07-01",prev_role:"Head coach of New Zealand U23",nationality:"UK (born in Northampton)"},
+  "Norway":{name:"St\u00e5le Solbakken",since:"Since December 2020",since_date:"2020-12-01",prev_role:"Head coach of FC Copenhagen",nationality:"Norway"},
+  "Panama":{name:"Thomas Christiansen",since:"Since July 2020",since_date:"2020-07-01",prev_role:"Head coach of Union Saint-Gilloise",nationality:"Spain/Denmark (born in Hadsund)"},
+  "Paraguay":{name:"Gustavo Alfaro",since:"Since August 2024",since_date:"2024-08-01",prev_role:"Head coach of Costa Rica",nationality:"Argentina"},
+  "Portugal":{name:"Roberto Martinez",since:"Since January 2023",since_date:"2023-01-01",prev_role:"Head coach of Belgium",nationality:"Spain"},
+  "Qatar":{name:"Julen Lopetegui",since:"Since May 2025",since_date:"2025-05-01",prev_role:"Head coach of West Ham United",nationality:"Spain"},
+  "Saudi Arabia":{name:"*Georgios Donis",since:"Since April 2026",since_date:"2026-04-01",prev_role:"Head coach of Al-Khaleej",nationality:"Greece"},
+  "Scotland":{name:"Steve Clarke",since:"Since May 2019",since_date:"2019-05-01",prev_role:"Head coach of Kilmarnock",nationality:"Scotland"},
+  "Senegal":{name:"Pape Thiaw",since:"Since December 2024",since_date:"2024-12-01",prev_role:"Head coach of Senegal A'",nationality:"Senegal"},
+  "South Africa":{name:"Hugo Broos",since:"Since May 2021",since_date:"2021-05-01",prev_role:"Head coach of Oostende (caretaker)",nationality:"Belgium"},
+  "South Korea":{name:"Hong Myung-bo",since:"Since July 2024",since_date:"2024-07-01",prev_role:"Head coach of Ulsan HD",nationality:"Korea Republic"},
+  "Spain":{name:"Luis de la Fuente",since:"Since December 2022",since_date:"2022-12-01",prev_role:"Head coach of Spain U23",nationality:"Spain"},
+  "Sweden":{name:"Graham Potter",since:"Since October 2025",since_date:"2025-10-01",prev_role:"Head coach of West Ham United",nationality:"England"},
+  "Switzerland":{name:"Murat Yakin",since:"Since August 2021",since_date:"2021-08-01",prev_role:"Head coach of FC Schaffhausen",nationality:"Switzerland"},
+  "Tunisia":{name:"Sabri Lamouchi",since:"Since January 2026",since_date:"2026-01-01",prev_role:"Head coach of Al-Diriyah (Saudi Arabia)",nationality:"France/Tunisia (born in Lyon)"},
+  "Turkey":{name:"Vincenzo Montella",since:"Since September 2023",since_date:"2023-09-01",prev_role:"Head coach of Super Lig Adana Demirspor",nationality:"Italy"},
+  "USA":{name:"Mauricio Pochettino",since:"Since September 2024",since_date:"2024-09-01",prev_role:"Head coach of Chelsea",nationality:"Argentina"},
+  "Uruguay":{name:"Marcelo Bielsa",since:"Since May 2023",since_date:"2023-05-01",prev_role:"Head coach of Leeds United",nationality:"Argentina"},
+  "Uzbekistan":{name:"Fabio Cannavaro",since:"Since October 2025",since_date:"2025-10-01",prev_role:"Head coach of Dinamo Zagreb",nationality:"Italy"},
 };
 
 // BETSiE tournament-winner projections (May 30, 2026 baseline)
@@ -936,6 +989,7 @@ function renderMatchup(){
   // Context cards
   const grp1 = DATA.teams[team1]?.group, grp2 = DATA.teams[team2]?.group;
   const lf1 = DATA.last_friendlies[team1], lf2 = DATA.last_friendlies[team2];
+  const mgr1 = renderManagerRow(team1), mgr2 = renderManagerRow(team2);
   $('contextGrid').innerHTML = `
     <div class="context-card t1">
       <div class="context-card-header">
@@ -946,6 +1000,7 @@ function renderMatchup(){
       <div class="context-row"><span class="lbl">Opening Match</span><span class="val">${f1?.date_display || 'TBD'} vs ${f1?.opp || '—'}</span></div>
       <div class="context-row"><span class="lbl">Venue</span><span class="val">${f1?.stadium || '—'}, ${f1?.city || ''}</span></div>
       <div class="context-row"><span class="lbl">Kickoff</span><span class="val">${f1?.time_et || '—'}</span></div>
+      ${mgr1}
       <div class="context-row"><span class="lbl">Last Pre-WC</span><span class="val">${lf1 ? `${lf1.date} vs ${lf1.opp}` : 'TBD'}</span></div>
     </div>
     <div class="context-card t2">
@@ -957,6 +1012,7 @@ function renderMatchup(){
       <div class="context-row"><span class="lbl">Opening Match</span><span class="val">${f2?.date_display || 'TBD'} vs ${f2?.opp || '—'}</span></div>
       <div class="context-row"><span class="lbl">Venue</span><span class="val">${f2?.stadium || '—'}, ${f2?.city || ''}</span></div>
       <div class="context-row"><span class="lbl">Kickoff</span><span class="val">${f2?.time_et || '—'}</span></div>
+      ${mgr2}
       <div class="context-row"><span class="lbl">Last Pre-WC</span><span class="val">${lf2 ? `${lf2.date} vs ${lf2.opp}` : 'TBD'}</span></div>
     </div>
   `;
@@ -964,6 +1020,30 @@ function renderMatchup(){
   // Fixtures list per team
   renderFixturesCard('fixturesT1', team1, t1m);
   renderFixturesCard('fixturesT2', team2, t2m);
+}
+
+function renderManagerRow(team){
+  const m = MANAGERS[team];
+  if(!m) return '';
+  // Clean display name: strip leading "*" and any " replaced ..." suffix
+  let name = (m.name || '').replace(/^\*+/, '').replace(/\s+replaced\s+.*$/i, '').trim();
+  // NEW pill: <90 days from today
+  let pill = '';
+  if(m.since_date){
+    const ms = (Date.now() - Date.parse(m.since_date));
+    const days = ms / 86400000;
+    if(days >= 0 && days < 90){
+      const mo = Math.max(1, Math.floor(days / 30));
+      pill = `<span class="manager-new-pill">NEW · ${mo} MO</span>`;
+    }
+  }
+  const nationality = m.nationality || '';
+  const since = m.since || '';
+  const prev = m.prev_role ? ` · prev. ${m.prev_role}` : '';
+  return `
+    <div class="context-row"><span class="lbl">Manager</span><span class="val">${name}${nationality ? ' · ' + nationality : ''}${pill}</span></div>
+    <div class="context-row-sub">${since}${prev}</div>
+  `;
 }
 
 function renderFixturesCard(elId, team, meta){
