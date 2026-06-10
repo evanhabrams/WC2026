@@ -452,6 +452,7 @@ footer{text-align:center;padding:18px;color:var(--gray4);font-size:15px;border-t
     <div class="bet-card" id="valueBetsCard"></div>
     <div class="bet-card" id="futuresCard"></div>
     <div class="bet-card path-card" id="pathCard"></div>
+    <div class="bet-card" id="betsieExtraCard"></div>
   </div>
 
   <!-- ===== HISTORY TAB ===== -->
@@ -684,6 +685,9 @@ async function loadLiveData(){
     // Overlay BETSIE
     if (live.betsie_win) Object.assign(BETSIE_WIN, live.betsie_win);
     if (live.betsie_path) Object.assign(BETSIE_PATH, live.betsie_path);
+    if (live.betsie_stage) window.BETSIE_STAGE = live.betsie_stage;
+    if (live.betsie_groups) window.BETSIE_GROUPS = live.betsie_groups;
+    if (live.betsie_continent) window.BETSIE_CONTINENT = live.betsie_continent;
     // Capture odds data (added Jun 4 — populated by update_live_data.py --odds)
     if (Array.isArray(live.match_odds)) window.MATCH_ODDS = live.match_odds;
     if (live.winner_outrights) window.WINNER_OUTRIGHTS = live.winner_outrights;
@@ -1382,6 +1386,148 @@ function renderBets(){
     });
   });
   $('pathCard').innerHTML = pathHTML;
+  renderBetsieExtra();
+}
+
+// Active sub-tab for the BETSiE outlook module (persists across re-renders)
+window.betsieActiveTab = window.betsieActiveTab || 'stage';
+function setBetsieTab(name){
+  window.betsieActiveTab = name;
+  ['stage','groups','continent'].forEach(n => {
+    const panel = document.getElementById('betsie-panel-' + n);
+    const btn = document.getElementById('betsie-tab-' + n);
+    if (panel) panel.style.display = (n === name) ? 'block' : 'none';
+    if (btn){
+      btn.style.background = (n === name) ? 'var(--navy)' : 'var(--gray1)';
+      btn.style.color = (n === name) ? '#fff' : 'var(--gray4)';
+    }
+  });
+}
+
+function renderBetsieExtra(){
+  const card = $('betsieExtraCard');
+  if (!card) return;
+  const stageData = window.BETSIE_STAGE, groupData = window.BETSIE_GROUPS, contData = window.BETSIE_CONTINENT;
+  if (!stageData && !groupData && !contData){ card.innerHTML = ''; return; }
+  const t1m = TEAM_META[team1], t2m = TEAM_META[team2];
+  const pct = v => (v == null ? '—' : (v * 100).toFixed(1) + '%');
+  const one = v => (v == null ? '—' : v.toFixed(1));
+  const sgn = v => (v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(1));
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // ---------- STAGE OF EXIT (two selected teams) ----------
+  const exitDefs = [
+    {k:'group', l:'Out · Group Stage'},
+    {k:'r32',   l:'Out · Round of 32'},
+    {k:'r16',   l:'Out · Round of 16'},
+    {k:'qf',    l:'Out · Quarter-finals'},
+    {k:'sf',    l:'Out · Semi-finals'},
+    {k:'final', l:'Runner-up'},
+    {k:'champ', l:'Champion'},
+  ];
+  function stageBlock(team, meta){
+    const d = stageData && stageData[team];
+    if (!d) return `<div class="path-team" style="opacity:.7">${meta.flag} ${esc(team)} — no projection</div>`;
+    const row = {...d, champ: betsiePath(team).winWC};
+    let maxk = exitDefs[0].k, maxv = -1;
+    exitDefs.forEach(s => { const v = row[s.k]; if (v != null && v > maxv){ maxv = v; maxk = s.k; } });
+    const rows = exitDefs.map(s => {
+      const v = row[s.k] || 0, w = (v * 100);
+      const bold = s.k === maxk;
+      return `<div class="path-row">
+        <div class="path-stage"${bold ? ' style="font-weight:800;color:var(--navy)"' : ''}>${s.l}</div>
+        <div class="path-bar"><div class="path-bar-fill" style="width:${w}%;background:${meta.color};opacity:${bold ? 1 : 0.55}"></div></div>
+        <div class="path-pct"${bold ? ' style="font-weight:800"' : ''}>${w.toFixed(0)}%</div>
+      </div>`;
+    }).join('');
+    return `<div class="path-team t1" style="--accent:${meta.color}"><span class="flag">${meta.flag}</span>${esc(team)}</div>${rows}`;
+  }
+  const stagePanel = `
+    <div style="font-size:14px;color:var(--gray4);margin:2px 0 10px">How far each side is projected to go — most likely outcome highlighted.</div>
+    ${stageBlock(team1, t1m)}
+    <div style="height:10px"></div>
+    ${stageBlock(team2, t2m)}`;
+
+  // ---------- GROUP STANDINGS (both groups, full, selected teams raised) ----------
+  function groupTable(g){
+    const rows = (groupData && groupData[g]) || [];
+    if (!rows.length) return '';
+    const body = rows.map((r, i) => {
+      const sel = (r.team === team1) ? t1m : (r.team === team2) ? t2m : null;
+      const meta = TEAM_META[r.team];
+      const flag = meta ? meta.flag + ' ' : '';
+      const base = 'padding:7px 6px;border-bottom:1px solid var(--gray1);font-size:13px;';
+      const tdR = `style="${base}text-align:center"`;
+      let trStyle = '';
+      if (sel){
+        trStyle = `background:${sel.color}1a;font-weight:800;box-shadow:inset 4px 0 0 ${sel.color};transform:translateZ(0)`;
+      }
+      return `<tr style="${trStyle}">
+        <td style="${base}text-align:center;color:var(--gray4)">${i+1}</td>
+        <td style="${base}text-align:left;white-space:nowrap">${flag}${esc(r.team)}</td>
+        <td ${tdR}>${one(r.w)}</td><td ${tdR}>${one(r.d)}</td><td ${tdR}>${one(r.l)}</td>
+        <td ${tdR}>${one(r.gf)}</td><td ${tdR}>${one(r.ga)}</td><td ${tdR}>${sgn(r.gd)}</td>
+        <td ${tdR}><b>${one(r.pts)}</b></td>
+      </tr>${i===1 ? `<tr><td colspan="9" style="border-bottom:2px dashed var(--gray3,#cbd5e1);padding:0"></td></tr>` : ''}`;
+    }).join('');
+    const th = 'padding:6px;font-size:11px;color:var(--gray4);text-transform:uppercase;letter-spacing:.03em;';
+    return `<div style="font-weight:800;color:var(--navy);margin:6px 0 4px">Group ${g}</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:14px">
+        <thead><tr>
+          <th style="${th}text-align:center">#</th><th style="${th}text-align:left">Team</th>
+          <th style="${th}text-align:center">W</th><th style="${th}text-align:center">D</th><th style="${th}text-align:center">L</th>
+          <th style="${th}text-align:center">GF</th><th style="${th}text-align:center">GA</th><th style="${th}text-align:center">GD</th>
+          <th style="${th}text-align:center">Pts</th>
+        </tr></thead><tbody>${body}</tbody></table>`;
+  }
+  const g1 = DATA.teams[team1] && DATA.teams[team1].group;
+  const g2 = DATA.teams[team2] && DATA.teams[team2].group;
+  const groupOrder = (g1 === g2) ? [g1] : [g1, g2].filter(Boolean);
+  const groupPanel = `
+    <div style="font-size:14px;color:var(--gray4);margin:2px 0 10px">Projected final standings (expected W-D-L, goals and points). Selected teams highlighted; dashed line marks the top-two cut.</div>
+    ${groupOrder.map(groupTable).join('') || '<div style="color:var(--gray4)">No group projection available.</div>'}`;
+
+  // ---------- GO FURTHEST BY CONTINENT (own tab, full field) ----------
+  const titleCase = s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  function contBlock(region){
+    const rows = region.teams.map(x => {
+      const sel = (x.team === team1) ? t1m : (x.team === team2) ? t2m : null;
+      const meta = TEAM_META[x.team];
+      const flag = meta ? meta.flag + ' ' : '';
+      const w = (x.prob * 100);
+      const barColor = sel ? sel.color : 'var(--navy)';
+      const nameStyle = sel ? `font-weight:800;color:${sel.color}` : '';
+      return `<div class="path-row">
+        <div class="path-stage" style="${nameStyle};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${flag}${esc(x.team)}</div>
+        <div class="path-bar"><div class="path-bar-fill" style="width:${w}%;background:${barColor};opacity:${sel?1:0.5}"></div></div>
+        <div class="path-pct"${sel?' style="font-weight:800"':''}>${w.toFixed(0)}%</div>
+      </div>`;
+    }).join('');
+    return `<div style="font-weight:800;color:var(--navy);margin:10px 0 4px">${esc(titleCase(region.region))}</div>${rows}`;
+  }
+  const contPanel = `
+    <div style="font-size:14px;color:var(--gray4);margin:2px 0 10px">Most likely team from each confederation to advance furthest.</div>
+    ${(contData && contData.length) ? contData.map(contBlock).join('') : '<div style="color:var(--gray4)">No continental projection available.</div>'}`;
+
+  // ---------- assemble: header + sub-tabs + panels ----------
+  const tabBtn = (n, label) => {
+    const active = (window.betsieActiveTab === n);
+    return `<button id="betsie-tab-${n}" onclick="setBetsieTab('${n}')"
+      style="flex:1;padding:8px 6px;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;
+      background:${active?'var(--navy)':'var(--gray1)'};color:${active?'#fff':'var(--gray4)'}">${label}</button>`;
+  };
+  card.innerHTML = `
+    <h3>Tournament Outlook</h3>
+    <div style="display:flex;gap:6px;margin:4px 0 12px">
+      ${tabBtn('stage','Stage of Exit')}
+      ${tabBtn('groups','Group Standings')}
+      ${tabBtn('continent','By Continent')}
+    </div>
+    <div id="betsie-panel-stage" style="display:none">${stagePanel}</div>
+    <div id="betsie-panel-groups" style="display:none">${groupPanel}</div>
+    <div id="betsie-panel-continent" style="display:none">${contPanel}</div>
+    <div style="font-size:16px;color:var(--gray4);margin-top:10px;text-align:right">Projections · <b>Action Network</b></div>`;
+  setBetsieTab(window.betsieActiveTab);
 }
 
 // === HISTORY TAB ===
