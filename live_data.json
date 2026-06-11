@@ -1,13 +1,13 @@
 {
-  "updated_at": "2026-06-11T16:03:34.176541+00:00",
+  "updated_at": "2026-06-11T16:12:53.167456+00:00",
   "data_sources": {
     "fifa_rank": {
-      "as_of": "11 June 2026",
-      "method": "web"
+      "as_of": "2026-06-11",
+      "method": "file"
     },
     "elo_rating": {
-      "as_of": "10 June 2026",
-      "method": "web"
+      "as_of": "2026-01-19",
+      "method": "file"
     },
     "betsie_win": {
       "as_of": "2026-06-10",
@@ -58,44 +58,44 @@
   },
   "team_meta": {
     "Argentina": {
-      "fifa": 3,
-      "elo": 2115
+      "fifa": 1,
+      "elo": 2113
     },
     "Spain": {
       "fifa": 2,
-      "elo": 2157
+      "elo": 2171
     },
     "France": {
-      "fifa": 1,
+      "fifa": 3,
       "elo": 2063
     },
     "England": {
       "fifa": 4,
-      "elo": 2024
+      "elo": 2042
     },
     "Brazil": {
       "fifa": 6,
-      "elo": 1991
+      "elo": 1979
     },
     "Portugal": {
       "fifa": 5,
-      "elo": 1989
+      "elo": 1976
     },
     "Colombia": {
       "fifa": 13,
-      "elo": 1982
+      "elo": 1998
     },
     "Netherlands": {
-      "fifa": 7,
-      "elo": 1948
+      "fifa": 8,
+      "elo": 1959
     },
     "Germany": {
       "fifa": 10,
-      "elo": 1932
+      "elo": 1910
     },
     "Croatia": {
       "fifa": 11,
-      "elo": 1912
+      "elo": 1933
     },
     "Italy": {
       "fifa": 12,
@@ -103,42 +103,42 @@
     },
     "Belgium": {
       "fifa": 9,
-      "elo": 1894
+      "elo": 1849
     },
     "Morocco": {
-      "fifa": 8,
+      "fifa": 7,
       "elo": 1872
     },
     "Switzerland": {
       "fifa": 19,
-      "elo": 1891
+      "elo": 1897
     },
     "USA": {
-      "fifa": 16,
+      "fifa": 17,
       "elo": 1845
     },
     "Mexico": {
-      "fifa": 15,
-      "elo": 1875
+      "fifa": 14,
+      "elo": 1819
     },
     "Japan": {
       "fifa": 18,
-      "elo": 1906
+      "elo": 1879
     },
     "Senegal": {
-      "fifa": 14,
-      "elo": 1866
+      "fifa": 15,
+      "elo": 1869
     },
     "Ecuador": {
       "fifa": 23,
-      "elo": 1938
+      "elo": 1933
     },
     "Uruguay": {
-      "fifa": 17,
-      "elo": 1892
+      "fifa": 16,
+      "elo": 1890
     },
     "Iran": {
-      "fifa": 21,
+      "fifa": 20,
       "elo": 1797
     },
     "South Korea": {
@@ -158,15 +158,15 @@
       "elo": 1782
     },
     "Norway": {
-      "fifa": 44,
-      "elo": 1914
+      "fifa": 31,
+      "elo": 1922
     },
     "Sweden": {
-      "fifa": 39,
+      "fifa": 38,
       "elo": 1700
     },
     "Scotland": {
-      "fifa": 47,
+      "fifa": 42,
       "elo": 1640
     },
     "Türkiye": {
@@ -175,26 +175,26 @@
     },
     "Turkey": {
       "fifa": 22,
-      "elo": 1911
+      "elo": 1880
     },
     "Ivory Coast": {
       "fifa": 33,
       "elo": 1690
     },
     "Tunisia": {
-      "fifa": 40,
+      "fifa": 45,
       "elo": 1715
     },
     "Cape Verde": {
-      "fifa": 70,
+      "fifa": 67,
       "elo": 1505
     },
     "Ghana": {
-      "fifa": 65,
+      "fifa": 73,
       "elo": 1525
     },
     "DR Congo": {
-      "fifa": 51,
+      "fifa": 46,
       "elo": 1560
     },
     "South Africa": {
@@ -202,7 +202,7 @@
       "elo": 1545
     },
     "Czech Republic": {
-      "fifa": 41,
+      "fifa": 40,
       "elo": 1670
     },
     "Austria": {
@@ -210,19 +210,19 @@
       "elo": 1730
     },
     "Paraguay": {
-      "fifa": 64,
+      "fifa": 41,
       "elo": 1620
     },
     "Saudi Arabia": {
-      "fifa": 57,
+      "fifa": 61,
       "elo": 1575
     },
     "Iraq": {
-      "fifa": 61,
+      "fifa": 57,
       "elo": 1530
     },
     "Uzbekistan": {
-      "fifa": 62,
+      "fifa": 50,
       "elo": 1520
     },
     "Canada": {
@@ -230,19 +230,19 @@
       "elo": 1695
     },
     "Qatar": {
-      "fifa": 35,
+      "fifa": 56,
       "elo": 1570
     },
     "Bosnia and Herzegovina": {
-      "fifa": 52,
+      "fifa": 64,
       "elo": 1500
     },
     "Curacao": {
-      "fifa": 81,
+      "fifa": 82,
       "elo": 1380
     },
     "Jordan": {
-      "fifa": 68,
+      "fifa": 63,
       "elo": 1500
     },
     "Haiti": {
@@ -250,11 +250,11 @@
       "elo": 1450
     },
     "Panama": {
-      "fifa": 53,
+      "fifa": 34,
       "elo": 1620
     },
     "New Zealand": {
-      "fifa": 95,
+      "fifa": 85,
       "elo": 1465
     }
   },
