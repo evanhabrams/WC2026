@@ -30,8 +30,9 @@ body{font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .app-title-sub{font-size:15px;color:var(--gray3);letter-spacing:0.5px;text-transform:uppercase;font-weight:600;margin-top:-2px}
 .countdown{font-family:'Saira Condensed';font-weight:700;font-size:18px;color:var(--green);display:flex;align-items:center;gap:5px;background:rgba(0,200,83,0.1);padding:5px 10px;border-radius:6px;border:1px solid rgba(0,200,83,0.3)}
 .status-stack{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-.last-updated{font-family:'Saira Condensed';font-weight:600;font-size:15px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.4px}
-.last-updated span{color:rgba(255,255,255,0.85);font-weight:700}
+.last-updated{font-family:'Saira Condensed';display:flex;flex-direction:column;align-items:flex-end;gap:1px;background:rgba(0,200,83,0.10);border:1px solid rgba(0,200,83,0.45);border-radius:9px;padding:7px 16px}
+.last-updated .lu-label{font-size:11px;font-weight:600;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:1.2px;line-height:1}
+.last-updated .lu-val{font-size:25px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.4px;line-height:1.05}
 .countdown .n{color:#fff;font-size:22px}
 
 /* ===== TEAM PICKER ===== */
@@ -413,8 +414,10 @@ footer{text-align:center;padding:18px;color:var(--gray4);font-size:15px;border-t
       <div class="app-title">ACTION WC 26</div>
     </div>
     <div class="status-stack">
-      <div class="last-updated">Last Updated <span id="lastUpdated">—</span></div>
-      <div class="countdown" id="cdWrap"><span class="n" id="cdDays">—</span><span id="cdLabel">DAYS</span></div>
+      <div class="last-updated">
+        <span class="lu-label">Last Updated</span>
+        <span class="lu-val" id="lastUpdated">—</span>
+      </div>
     </div>
   </div>
 </header>
