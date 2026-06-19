@@ -1134,21 +1134,28 @@ function renderManagerRow(team){
 
 function renderFixturesCard(elId, team, meta){
   const fx = DATA.fixtures[team] || [];
+  const played = (DATA.last_matches && DATA.last_matches[team]) || [];
+  // Match a fixture to a played result by date (one game per team per date)
+  const resultFor = (d) => played.find(m => m.date === d) || null;
+  const resColor = (res) => res === 'W' ? 'var(--green-dark)' : (res === 'L' ? 'var(--red)' : 'var(--gray4)');
+  const resLabel = (res) => res === 'W' ? 'Win' : (res === 'L' ? 'Loss' : 'Draw');
   $(elId).innerHTML = `
     <h3><i class="ti ti-calendar-event"></i> ${meta.flag} ${team} · Group Stage</h3>
-    ${fx.map(f => `
-      <div class="fixture-row">
+    ${fx.map(f => {
+      const r = resultFor(f.date);
+      const right = r
+        ? `<div class="fixture-time"><span style="font-family:'Saira Condensed';font-weight:700;font-size:20px;color:${resColor(r.result)}">${r.gf}–${r.ga}</span><span class="local" style="color:${resColor(r.result)};font-weight:700">FT · ${resLabel(r.result)}</span></div>`
+        : `<div class="fixture-time">${f.time_et}<span class="local">${f.time_local} local</span></div>`;
+      return `
+      <div class="fixture-row"${r ? ' style="opacity:0.9"' : ''}>
         <div class="fixture-date">${f.date_display.split(' ').slice(1).join(' ')}</div>
         <div>
           <div class="fixture-vs">vs <strong>${f.opp}</strong></div>
           <div class="fixture-meta">${f.stadium}, ${f.city}</div>
         </div>
-        <div class="fixture-time">
-          ${f.time_et}
-          <span class="local">${f.time_local} local</span>
-        </div>
-      </div>
-    `).join('')}
+        ${right}
+      </div>`;
+    }).join('')}
   `;
 }
 
