@@ -174,14 +174,25 @@ body{font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .fixtures-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid var(--gray2)}
 .fixtures-card h3{font-size:18px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;color:var(--navy3);margin-bottom:14px;display:flex;align-items:center;gap:6px}
 .fixtures-card h3 i{color:var(--green)}
-.fixture-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:10px 0;border-top:1px solid var(--gray1);align-items:center;font-size:18px}
+.fixture-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:12px 0;border-top:1px solid var(--gray1);align-items:center;font-size:20px}
 .fixture-row:first-of-type{border-top:none}
-.fixture-date{font-family:'Saira Condensed';font-weight:700;font-size:18px;color:var(--navy);text-transform:uppercase;background:var(--gray1);padding:6px 10px;border-radius:4px;text-align:center;min-width:72px}
-.fixture-vs{font-size:18px;font-weight:600;color:var(--navy)}
-.fixture-vs .vs-label{color:var(--gray4);font-weight:500;font-size:15px;margin:0 4px}
-.fixture-meta{font-size:17px;color:var(--gray4);margin-top:3px}
-.fixture-time{font-family:'Saira Condensed';font-weight:700;font-size:18px;color:var(--green-dark);text-align:right}
-.fixture-time .local{display:block;color:var(--gray4);font-size:16px;font-weight:600;margin-top:2px}
+.fixture-date{font-family:'Saira Condensed';font-weight:700;font-size:20px;color:var(--navy);text-transform:uppercase;background:var(--gray1);padding:7px 11px;border-radius:4px;text-align:center;min-width:78px}
+.fixture-vs{font-size:22px;font-weight:700;color:var(--navy)}
+.fixture-vs .vs-label{color:var(--gray4);font-weight:500;font-size:16px;margin:0 4px}
+.fixture-meta{font-size:18px;color:var(--gray4);margin-top:3px}
+.fixture-time{font-family:'Saira Condensed';font-weight:700;font-size:20px;color:var(--green-dark);text-align:right}
+.fixture-time .local{display:block;color:var(--gray4);font-size:17px;font-weight:600;margin-top:2px}
+/* Played-game result tiles: green=win, red=loss, gray=draw */
+.fixture-row.result{border-top:none;margin:8px 0;padding:12px 14px;border-radius:8px}
+.fixture-row.result .fixture-date{background:rgba(255,255,255,0.7)}
+.fixture-row.win{background:rgba(0,200,83,0.16);border-left:6px solid var(--green)}
+.fixture-row.loss{background:rgba(226,75,74,0.15);border-left:6px solid var(--red)}
+.fixture-row.draw{background:var(--gray1);border-left:6px solid var(--gray3)}
+.fixture-score{font-family:'Saira Condensed';font-weight:800;font-size:32px;line-height:1;letter-spacing:0.5px}
+.fixture-result-label{display:block;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;margin-top:3px}
+.fixture-row.win .fixture-score,.fixture-row.win .fixture-result-label{color:var(--green-dark)}
+.fixture-row.loss .fixture-score,.fixture-row.loss .fixture-result-label{color:var(--red)}
+.fixture-row.draw .fixture-score,.fixture-row.draw .fixture-result-label{color:var(--navy)}
 
 /* ===== BETS TAB ===== */
 .bet-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid var(--gray2)}
@@ -1137,17 +1148,18 @@ function renderFixturesCard(elId, team, meta){
   const played = (DATA.last_matches && DATA.last_matches[team]) || [];
   // Match a fixture to a played result by date (one game per team per date)
   const resultFor = (d) => played.find(m => m.date === d) || null;
-  const resColor = (res) => res === 'W' ? 'var(--green-dark)' : (res === 'L' ? 'var(--red)' : 'var(--gray4)');
+  const resClass = (res) => res === 'W' ? 'win' : (res === 'L' ? 'loss' : 'draw');
   const resLabel = (res) => res === 'W' ? 'Win' : (res === 'L' ? 'Loss' : 'Draw');
   $(elId).innerHTML = `
     <h3><i class="ti ti-calendar-event"></i> ${meta.flag} ${team} · Group Stage</h3>
     ${fx.map(f => {
       const r = resultFor(f.date);
+      const rowClass = r ? `fixture-row result ${resClass(r.result)}` : 'fixture-row';
       const right = r
-        ? `<div class="fixture-time"><span style="font-family:'Saira Condensed';font-weight:700;font-size:20px;color:${resColor(r.result)}">${r.gf}–${r.ga}</span><span class="local" style="color:${resColor(r.result)};font-weight:700">FT · ${resLabel(r.result)}</span></div>`
+        ? `<div class="fixture-time"><span class="fixture-score">${r.gf}–${r.ga}</span><span class="fixture-result-label">FT · ${resLabel(r.result)}</span></div>`
         : `<div class="fixture-time">${f.time_et}<span class="local">${f.time_local} local</span></div>`;
       return `
-      <div class="fixture-row"${r ? ' style="opacity:0.9"' : ''}>
+      <div class="${rowClass}">
         <div class="fixture-date">${f.date_display.split(' ').slice(1).join(' ')}</div>
         <div>
           <div class="fixture-vs">vs <strong>${f.opp}</strong></div>
