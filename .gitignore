@@ -1,2 +1,17 @@
-google_service_account.json
-google_service_account.json
+# === WC2026 tool — only index.html and live_data.json should ever be pushed ===
+# Strategy: ignore everything, then explicitly un-ignore the two deploy files.
+
+# Ignore everything by default
+*
+
+# ...but always allow these
+!index.html
+!live_data.json
+!.gitignore
+
+# Notes:
+# - The Excel DB, CSVs (squads/players/results), age_data.txt, fifa_ranks.json,
+#   elo_ratings.json, and google_service_account.json stay LOCAL (never pushed).
+# - Generated paste sheets (*_Fill.xlsx, Closing_Odds.xlsx), logs (*.log),
+#   backups/, and the BETSiE projections .xlsx are all ignored.
+# - All the .py scripts stay local too — the live tool only needs the two files above.
