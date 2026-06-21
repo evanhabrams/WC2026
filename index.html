@@ -906,6 +906,57 @@ function getMarketTotal(t1, t2, projTotal){
   userFriendly.sort((a, b) => Math.abs(a.line - projTotal) - Math.abs(b.line - projTotal));
   return userFriendly[0];
 }
+// === POWER RATING (Elo + FIFA + L5/L10 form) — drives the "Powered by Evan" projections ===
+// Computed client-side from TEAM_META + DATA.last_matches, so it refreshes automatically
+// whenever Elo, FIFA, or recent results update — no extra pipeline step needed.
+let _fifaFit = null;
+function fifaImpliedElo(rank){
+  if (!_fifaFit){
+    // Fit Elo = a + b*ln(FIFA rank) across all rated teams, once.
+    const pts = Object.values(TEAM_META).filter(m => m.elo && m.fifa).map(m => [Math.log(m.fifa), m.elo]);
+    const n = pts.length, mx = pts.reduce((s,p)=>s+p[0],0)/n, my = pts.reduce((s,p)=>s+p[1],0)/n;
+    let num=0, den=0; for (const [x,y] of pts){ num+=(x-mx)*(y-my); den+=(x-mx)*(x-mx); }
+    const b = num/den; _fifaFit = {a: my - b*mx, b};
+  }
+  return _fifaFit.a + _fifaFit.b * Math.log(rank);
+}
+function teamForm(team){
+  const games = (DATA.last_matches && DATA.last_matches[team]) || [];
+  if (!games.length) return 0;
+  const elo = TEAM_META[team] ? TEAM_META[team].elo : 1700;
+  const winExp = (ra, rb) => 1/(1+Math.pow(10, -(ra-rb)/400));
+  const windowScore = gs => {
+    if (!gs.length) return 0;
+    let s = 0;
+    for (const g of gs){
+      const res = g.result==='W' ? 1 : (g.result==='D' ? 0.5 : 0);
+      const oppElo = TEAM_META[g.opp] ? TEAM_META[g.opp].elo : null;
+      const exp = oppElo!=null ? winExp(elo, oppElo) : 0.60; // unknown (friendly) opp ~ mild favorite
+      const gd = Math.max(-3, Math.min(3, (g.gf||0)-(g.ga||0)));
+      s += (res - exp) + 0.05*gd;
+    }
+    return s/gs.length;
+  };
+  // L5 weighted over L10 for recency; capped so recent form nudges, never drives.
+  const raw = 0.6*windowScore(games.slice(-5)) + 0.4*windowScore(games.slice(-10));
+  return Math.max(-35, Math.min(35, 70*raw));
+}
+function teamPower(team){
+  const m = TEAM_META[team]; if (!m) return 1700;
+  const fifaElo = m.fifa ? fifaImpliedElo(m.fifa) : m.elo;
+  return 0.65*m.elo + 0.35*fifaElo + teamForm(team);
+}
+// Bivariate-Poisson W/D/L from projected goals, with a market-calibrated draw lift
+// (independent Poisson under-disperses draws; ×1.14 matches the ~0.26 market average).
+function wdlFromGoals(l1, l2){
+  let pH=0, pA=0, pD=0; const M=8;
+  for (let i=0;i<=M;i++){ const ph=poissonPMF(i,l1);
+    for (let j=0;j<=M;j++){ const c=ph*poissonPMF(j,l2);
+      if (i>j) pH+=c; else if (i<j) pA+=c; else pD+=c; } }
+  pD *= 1.14;
+  const t = pH+pA+pD;
+  return { p1: pH/t, pd: pD/t, p2: pA/t };
+}
 function computeMatchupModel(t1, t2){
   const t1m = TEAM_META[t1], t2m = TEAM_META[t2];
   // === Try Giffen xG first ===
@@ -915,50 +966,26 @@ function computeMatchupModel(t1, t2){
     const t1IsHome = (proj.home === t1);
     const lam1 = t1IsHome ? proj.xg_h : proj.xg_a;
     const lam2 = t1IsHome ? proj.xg_a : proj.xg_h;
-    // Compute W/D/L from bivariate independent Poisson, summing P(i,j) over scorelines
-    let pHome = 0, pAway = 0, pDraw = 0;
-    const maxGoals = 8;
-    for (let i = 0; i <= maxGoals; i++){
-      const ph = poissonPMF(i, lam1);
-      for (let j = 0; j <= maxGoals; j++){
-        const pa = poissonPMF(j, lam2);
-        const cell = ph * pa;
-        if (i > j) pHome += cell;
-        else if (i < j) pAway += cell;
-        else pDraw += cell;
-      }
-    }
-    // Normalize tiny rounding tail
-    const tot = pHome + pAway + pDraw;
+    const w = wdlFromGoals(lam1, lam2);
     return {
-      p1adj: pHome / tot,
-      p_draw: pDraw / tot,
-      p2adj: pAway / tot,
-      g1proj: lam1,
-      g2proj: lam2,
-      source: 'giffen',
-      sourceLabel: 'Powered by Action',
-      gameNo: proj.game_no,
+      p1adj: w.p1, p_draw: w.pd, p2adj: w.p2,
+      p1raw: w.p1 + w.pd/2,
+      g1proj: lam1, g2proj: lam2,
+      source: 'giffen', sourceLabel: 'Powered by Action', gameNo: proj.game_no,
     };
   }
-  // === Fall back to Elo ===
-  const eloDiff = (t1m.elo - t2m.elo) + 30;
-  const p1raw = 1/(1+Math.pow(10, -eloDiff/400));
-  const p_draw = 0.24 * (1 - Math.abs(p1raw - 0.5)*2 * 0.6);
-  // Supremacy + total model: goal margin grows with the Elo gap and the total
-  // expands on mismatches (replaces the old fixed-2.8-pie split that saturated
-  // at 2.0/0.8). Neutral site, so it's symmetric: swap the teams and it flips.
-  const S = 5.0 * Math.tanh((t1m.elo - t2m.elo)/629);   // expected goal margin, bounded +/-5
-  const T = 2.7 + 0.40 * Math.abs(S);                    // total: ~2.7 even, rises with the gap
+  // === Fall back to the power rating (blend of Elo + FIFA + L5/L10 form) ===
+  const gap = teamPower(t1) - teamPower(t2);
+  const S = 2.4 * Math.tanh(gap/430);     // expected goal margin (calibrated to WC history)
+  const T = 2.5 + 0.30 * Math.abs(S);     // total: ~2.5 even, rises with the gap
+  const g1 = Math.max(0.2, Math.min(5, (T + S)/2));
+  const g2 = Math.max(0.2, Math.min(5, (T - S)/2));
+  const w = wdlFromGoals(g1, g2);
   return {
-    p1adj: p1raw * (1 - p_draw),
-    p_draw: p_draw,
-    p2adj: (1-p1raw) * (1 - p_draw),
-    g1proj: Math.max(0.25, Math.min(4.8, (T + S)/2)),
-    g2proj: Math.max(0.25, Math.min(4.8, (T - S)/2)),
-    source: 'elo',
-    sourceLabel: 'Powered by Evan',
-    gameNo: null,
+    p1adj: w.p1, p_draw: w.pd, p2adj: w.p2,
+    p1raw: w.p1 + w.pd/2,
+    g1proj: g1, g2proj: g2,
+    source: 'elo', sourceLabel: 'Powered by Evan', gameNo: null,
   };
 }
 
@@ -979,7 +1006,7 @@ function renderMatchup(){
   const f1 = nextFixture(team1), f2 = nextFixture(team2);
   // Unified model: Giffen xG (Action Network) if available, else Elo Poisson
   const model = computeMatchupModel(team1, team2);
-  const p1 = model.source === 'giffen' ? (model.p1adj + model.p_draw/2) : (1/(1+Math.pow(10, -(((t1m.elo - t2m.elo) + 30)/400))));
+  const p1 = model.p1raw;
   const p_draw = model.p_draw;
   const p1adj = model.p1adj;
   const p2adj = model.p2adj;
