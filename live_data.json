@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-22T14:26:05.998832+00:00",
+  "updated_at": "2026-06-22T14:27:28.975420+00:00",
   "data_sources": {
     "fifa_rank": {
       "as_of": "2026-06-11",
@@ -21,12 +21,12 @@
       "note": "Full BETSiE refresh. Authoritative through next update."
     },
     "match_odds": {
-      "as_of": "2026-06-22T14:26:04.437998+00:00",
+      "as_of": "2026-06-22T14:27:27.765093+00:00",
       "source": "The Odds API",
       "events": 32
     },
     "winner_outrights": {
-      "as_of": "2026-06-22T14:26:04.622078+00:00",
+      "as_of": "2026-06-22T14:27:28.000360+00:00",
       "source": "The Odds API",
       "books": [
         "BetRivers",
@@ -34,7 +34,7 @@
       ]
     },
     "match_projections": {
-      "as_of": "2026-06-22T14:26:05.998722+00:00",
+      "as_of": "2026-06-22T14:27:28.975289+00:00",
       "source": "Action Network / Nick Giffen",
       "sheet": "https://docs.google.com/spreadsheets/d/12v8WebV5SakStof9ByCLxAKZWeePqbBgGyZs1dTh_DE",
       "tab": "Per Game xG",
@@ -799,17 +799,17 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
         "h2h": {
-          "home": -222,
+          "home": -223,
           "away": 672,
           "draw": 339
         },
@@ -821,10 +821,10 @@
         },
         "spreads": {
           "-1.0": {
-            "Argentina": -128
+            "Argentina": -129
           },
           "1.0": {
-            "Austria": 109
+            "Austria": 110
           }
         }
       }
@@ -837,12 +837,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -881,12 +881,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -925,12 +925,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -963,12 +963,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1005,12 +1005,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1063,12 +1063,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1101,12 +1101,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1147,12 +1147,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1205,12 +1205,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1251,12 +1251,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1295,12 +1295,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1337,12 +1337,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1379,12 +1379,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1427,12 +1427,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1479,12 +1479,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1521,12 +1521,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1563,12 +1563,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1621,12 +1621,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1671,12 +1671,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1713,12 +1713,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1761,12 +1761,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1799,12 +1799,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1841,12 +1841,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1883,12 +1883,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1931,12 +1931,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
-        "LowVig.ag",
-        "FanDuel",
-        "BetOnline.ag",
-        "MyBookie.ag",
         "BetMGM",
+        "LowVig.ag",
+        "DraftKings",
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
         "BetUS"
       ],
       "consensus": {
@@ -1977,12 +1977,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
+        "BetMGM",
         "LowVig.ag",
+        "DraftKings",
         "FanDuel",
-        "BetOnline.ag",
         "MyBookie.ag",
-        "BetMGM"
+        "BetOnline.ag"
       ],
       "consensus": {
         "h2h": {
@@ -2020,12 +2020,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
+        "BetMGM",
         "LowVig.ag",
+        "DraftKings",
         "FanDuel",
-        "BetOnline.ag",
         "MyBookie.ag",
-        "BetMGM"
+        "BetOnline.ag"
       ],
       "consensus": {
         "h2h": {
@@ -2067,12 +2067,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
+        "BetMGM",
         "LowVig.ag",
+        "DraftKings",
         "FanDuel",
-        "BetOnline.ag",
         "MyBookie.ag",
-        "BetMGM"
+        "BetOnline.ag"
       ],
       "consensus": {
         "h2h": {
@@ -2108,12 +2108,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
+        "BetMGM",
         "LowVig.ag",
+        "DraftKings",
         "FanDuel",
-        "BetOnline.ag",
         "MyBookie.ag",
-        "BetMGM"
+        "BetOnline.ag"
       ],
       "consensus": {
         "h2h": {
@@ -2155,12 +2155,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
+        "BetMGM",
         "LowVig.ag",
+        "DraftKings",
         "FanDuel",
-        "BetOnline.ag",
         "MyBookie.ag",
-        "BetMGM"
+        "BetOnline.ag"
       ],
       "consensus": {
         "h2h": {
@@ -2200,12 +2200,12 @@
       "books": [
         "Bovada",
         "BetRivers",
-        "DraftKings",
+        "BetMGM",
         "LowVig.ag",
+        "DraftKings",
         "FanDuel",
-        "BetOnline.ag",
         "MyBookie.ag",
-        "BetMGM"
+        "BetOnline.ag"
       ],
       "consensus": {
         "h2h": {
