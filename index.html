@@ -1005,8 +1005,11 @@ function renderMatchup(){
   const t1m = TEAM_META[team1], t2m = TEAM_META[team2];
   // Each team's NEXT upcoming fixture (first with date today-or-later)
   const _todayISO = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
-  const nextFixture = (team) => { const fx = DATA.fixtures[team] || []; return fx.find(f => f.date >= _todayISO) || null; };
-  const f1 = nextFixture(team1), f2 = nextFixture(team2);
+const nextFixture = (team) => {
+    const fx = DATA.fixtures[team] || [];
+    const played = new Set((DATA.last_matches[team] || []).map(m => m.date));  // dates already played -> skip
+    return fx.find(f => f.date >= _todayISO && !played.has(f.date)) || null;
+  };  const f1 = nextFixture(team1), f2 = nextFixture(team2);
   // Unified model: Giffen xG (Action Network) if available, else Elo Poisson
   const model = computeMatchupModel(team1, team2);
   const p1 = model.p1raw;
