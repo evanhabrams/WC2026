@@ -24,18 +24,27 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
   background:linear-gradient(90deg,var(--green),rgba(0,200,83,0))}
 .hdr-main{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px}
-.check{background:var(--green);color:var(--green-dark);width:36px;height:36px;border-radius:8px;display:flex;
-  align-items:center;justify-content:center;font-weight:800;font-size:24px;flex:0 0 auto;box-shadow:0 4px 14px rgba(0,200,83,.26)}
-.brand-txt h1{font-family:'Saira Condensed';font-weight:700;font-size:26px;letter-spacing:.4px;line-height:1}
-.brand-txt .t-thin{color:var(--gray3);font-weight:600}
-.subtitle{font-family:'Saira';font-weight:500;font-size:12px;color:var(--gray3);letter-spacing:.2px;margin-top:6px}
+.check{background:var(--green);color:var(--green-dark);width:46px;height:46px;border-radius:11px;display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:30px;flex:0 0 auto;box-shadow:0 5px 18px rgba(0,200,83,.3)}
+.brand-txt h1{font-family:'Saira Condensed';font-weight:800;font-size:40px;letter-spacing:.4px;line-height:.94}
+.brand-txt .t-thin{background:linear-gradient(90deg,var(--green-light),var(--green));-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800}
+.subtitle{font-family:'Saira';font-weight:500;font-size:13px;color:var(--gray3);letter-spacing:.2px;margin-top:7px}
 .subtitle .dim{color:var(--gray4)}
-.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-.last-updated{font-family:'Saira Condensed';display:flex;flex-direction:column;align-items:flex-end;gap:1px;
-  background:rgba(0,200,83,0.09);border:1px solid rgba(0,200,83,0.4);border-radius:9px;padding:5px 13px}
-.lu-label{font-size:9px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.3px;line-height:1}
-.lu-val{font-size:18px;font-weight:700;color:#fff;letter-spacing:.4px;line-height:1.1;margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:11px;flex-wrap:wrap;justify-content:flex-end}
+.last-updated{font-family:'Saira Condensed';display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;
+  background:rgba(0,200,83,0.09);border:1px solid rgba(0,200,83,0.4);border-radius:10px;padding:6px 18px;min-width:104px}
+.lu-label{font-size:9px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.4px;line-height:1}
+.lu-val{font-size:19px;font-weight:700;color:#fff;letter-spacing:.5px;line-height:1.1;margin-top:1px}
 .toolbar{display:flex;gap:8px;align-items:center}
+.switch{display:inline-flex;align-items:center;gap:10px;background:var(--navy3);border:1px solid var(--line);border-radius:10px;
+  padding:7px 14px 7px 11px;cursor:pointer;font-family:'Saira';font-weight:600;font-size:12.5px;color:var(--gray3);transition:.16s;white-space:nowrap}
+.switch:hover{border-color:#4b5563}
+.sw-track{width:38px;height:20px;border-radius:999px;background:var(--navy);border:1px solid var(--line);position:relative;transition:.18s;flex:0 0 auto}
+.sw-knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#9aa6b5;transition:.18s}
+.switch[aria-checked="true"]{border-color:rgba(0,200,83,.5);background:rgba(0,200,83,.10);color:var(--green-light)}
+.switch[aria-checked="true"] .sw-track{background:var(--green);border-color:transparent}
+.switch[aria-checked="true"] .sw-knob{left:20px;background:var(--green-dark)}
 .btn{font-family:'Saira';font-weight:600;font-size:12px;color:var(--ink);background:var(--navy3);border:1px solid var(--line);
   border-radius:8px;padding:8px 13px;cursor:pointer;transition:.15s;letter-spacing:.2px;white-space:nowrap}
 .btn:hover{background:var(--navy4);border-color:#4b5563}
@@ -56,22 +65,24 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
 .board{display:flex;gap:14px;overflow-x:auto;padding-bottom:18px;align-items:stretch}
 .col{display:flex;flex-direction:column;min-width:208px;flex:0 0 auto}
 .col.center{min-width:236px}
-.coltitle{font-family:'Saira Condensed';font-weight:700;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;
-  color:var(--gray3);text-align:center;padding:6px 0 4px;position:sticky;top:0;background:transparent;z-index:2}
+.coltitle{font-family:'Saira Condensed';font-weight:700;font-size:16px;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--ink);text-align:center;padding:6px 0 9px;position:sticky;top:0;background:transparent;z-index:2}
 .colbody{display:flex;flex-direction:column;justify-content:space-around;flex:1;gap:8px}
 
 .match{background:linear-gradient(180deg,#141d2a,#0f1620);border:1px solid var(--line);border-radius:10px;
   overflow:hidden;position:relative;transition:.15s;cursor:pointer}
 .match:hover{border-color:#3b4a5e;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .match.sel{border-color:var(--green);box-shadow:0 0 0 1px var(--green),0 0 22px rgba(0,200,83,.25)}
-.mhead{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:rgba(255,255,255,.025);
-  font-size:9.5px;letter-spacing:.4px;color:var(--gray4);border-bottom:1px solid var(--line)}
-.mhead b{color:var(--gray3);font-weight:600}
-.slot{display:flex;align-items:center;gap:7px;padding:7px 8px;min-height:34px;position:relative}
+.mhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 10px;background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--line)}
+.mhead b{color:var(--ink);font-weight:700;font-size:12px;letter-spacing:.3px;white-space:nowrap;flex:0 0 auto}
+.mhead .mv{font-family:'Saira';color:var(--gray3);font-weight:500;font-size:11px;letter-spacing:.2px;text-align:right;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot{display:flex;align-items:center;gap:9px;padding:10px 11px;min-height:42px;position:relative}
 .slot+.slot{border-top:1px solid var(--line)}
-.slot .fl{font-size:16px;line-height:1;width:20px;text-align:center;flex:0 0 auto}
-.slot .nm{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
-.slot.ph .nm{color:var(--gray4);font-weight:500;font-style:italic;font-size:12px}
+.slot .fl{font-size:20px;line-height:1;width:24px;text-align:center;flex:0 0 auto}
+.slot .nm{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.slot.ph .nm{color:var(--gray4);font-weight:500;font-style:italic;font-size:14.5px}
 .slot .wp{font-family:'Saira Condensed';font-weight:700;font-size:11.5px;color:var(--gray3);flex:0 0 auto}
 .slot.win{background:rgba(0,200,83,.07)}
 .slot.win .nm{color:var(--green-light)}
@@ -158,8 +169,11 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
           <span class="lu-val" id="lastUpdated">—</span>
         </div>
         <div class="toolbar">
-          <button class="btn primary" id="fillproj">Fill projected W/R</button>
-          <button class="btn" id="reset">Reset</button>
+          <button class="switch" id="projToggle" role="switch" aria-checked="false"
+            title="On: fill all Winner/Runner-up slots with projected teams · Off: clear the board">
+            <span class="sw-track"><span class="sw-knob"></span></span>
+            <span class="sw-label">Projected teams</span>
+          </button>
         </div>
       </div>
     </div>
@@ -287,7 +301,8 @@ function matchEl(no){
   const m=ALL_MATCHES[no];const st=SLOTS[no];
   const el=document.createElement('div');el.className="match"+(SELECTED===no?" sel":"");
   const pa=participant(no,"a"),pb=participant(no,"b");
-  el.innerHTML=`<div class="mhead"><b>Match ${no}</b><span>${m.date} · ${m.venue}</span></div>`;
+  const vshort = m.venue==="New York/New Jersey" ? "NY/NJ" : m.venue;
+  el.innerHTML=`<div class="mhead"><b>Match ${no}</b><span class="mv">${m.date} · ${vshort}</span></div>`;
   el.appendChild(slotEl(no,"a",pa,st));
   el.appendChild(slotEl(no,"b",pb,st));
   el.querySelector('.mhead').addEventListener('click',e=>{e.stopPropagation();openCompare(no);});
@@ -422,25 +437,25 @@ function nextMatchOf(no){
   for(const k in ALL_MATCHES){const m=ALL_MATCHES[k];if(m.a===no||m.b===no)return k;}return null;
 }
 
-/* ---------- toolbar ---------- */
-document.getElementById('reset').addEventListener('click',()=>{
-  if(!confirm("Clear all assigned teams and results?"))return;
-  for(const k in SLOTS)SLOTS[k]={a:null,b:null,winner:null};save();render();closePanel();
-});
-document.getElementById('fillproj').addEventListener('click',()=>{
-  // fill Winner/Runner-up slots from projected standings; leave 3rd-place slots for manual entry
-  WC.BRACKET.R32.forEach(m=>{
-    ["a","b"].forEach(sd=>{
-      const code=m[sd];
-      if(code[0]==="W"||code[0]==="R"){
-        const g=code.slice(2);const teams=WC.GROUPS[g];
-        const idx=code[0]==="W"?0:1; // projected winner / runner-up by standings order
-        // GROUPS are stored in projected standings order
-        if(teams&&teams[idx])SLOTS[m.m][sd]=teams[idx];
-      }
-    });
-  });
-  save();render();
+/* ---------- toolbar: single projected/clear toggle ---------- */
+function clearBoard(){ for(const k in SLOTS)SLOTS[k]={a:null,b:null,winner:null}; }
+function fillProjected(){
+  // fill Winner/Runner-up slots from projected order; 3rd-place slots left for manual entry
+  WC.BRACKET.R32.forEach(m=>["a","b"].forEach(sd=>{
+    const code=m[sd];
+    if(code[0]==="W"||code[0]==="R"){
+      const teams=WC.GROUPS[code.slice(2)]; const idx=code[0]==="W"?0:1;
+      if(teams&&teams[idx])SLOTS[m.m][sd]=teams[idx];
+    }
+  }));
+}
+const projToggle=document.getElementById('projToggle');
+function setToggle(on){ projToggle.setAttribute('aria-checked', on?'true':'false'); }
+projToggle.addEventListener('click',()=>{
+  const on = projToggle.getAttribute('aria-checked')!=='true';
+  if(on){ fillProjected(); }
+  else { if(!confirm("Clear all assigned teams and results?")){return;} clearBoard(); }
+  setToggle(on); save(); render(); closePanel();
 });
 
 /* ---------- pre-seed confirmed group winners (verified Jun 23) ---------- */
@@ -456,6 +471,10 @@ load();
 // only seed if nothing saved yet
 let any=false;for(const k in SLOTS){if(SLOTS[k].a||SLOTS[k].b){any=true;break;}}
 if(!any)seedConfirmed();
+// reflect toggle: on if most Winner/Runner-up slots are filled
+(function(){let f=0,t=0;WC.BRACKET.R32.forEach(m=>["a","b"].forEach(sd=>{
+  const c=m[sd]; if(c[0]==="W"||c[0]==="R"){t++; if(SLOTS[m.m][sd])f++;}}));
+  setToggle(t>0 && f>=t-2);})();
 render();
 </script>
 </body>
