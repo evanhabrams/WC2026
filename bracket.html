@@ -145,6 +145,16 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
 .cmprow .cv{font-family:'Saira Condensed';font-weight:700;font-size:14px}
 .cmprow .cv.l{text-align:right}.cmprow .cv.r{text-align:left}
 .cand{font-size:12px;color:var(--gray3);line-height:1.6}
+.cblock{margin-bottom:16px}
+.chead{font-family:'Saira Condensed';font-weight:700;font-size:14.5px;color:var(--ink);letter-spacing:.3px;
+  display:flex;flex-direction:column;gap:2px;margin-bottom:9px}
+.chead .csub{font-family:'Saira';font-weight:500;font-size:10.5px;color:var(--gray4);letter-spacing:.2px}
+.crow{display:grid;grid-template-columns:22px 1fr 64px 46px;align-items:center;gap:9px;padding:4px 0}
+.crfl{font-size:18px;text-align:center;line-height:1}
+.crnm{font-size:13.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crbar{height:13px;border-radius:4px;background:var(--navy3);overflow:hidden;position:relative}
+.crbar>i{position:absolute;inset:0 auto 0 0;border-radius:4px}
+.crpct{font-family:'Saira Condensed';font-weight:700;font-size:13.5px;text-align:right;color:var(--ink)}
 .gsplit{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px}
 .gsplit .gcell{background:var(--navy2);border:1px solid var(--line);border-radius:8px;padding:7px 4px;text-align:center}
 .gsplit .gp{font-size:10px;letter-spacing:.5px;color:var(--gray4);text-transform:uppercase}
@@ -430,9 +440,22 @@ function openCompare(no){
   let candHtml="";
   [["a",pa],["b",pb]].forEach(([sd,p])=>{
     if(!p.team && p.kind==="slot"){
-      const cands=eligibleTeams(p.code).slice().sort((x,y)=>(WC.TEAMS[y].champ)-(WC.TEAMS[x].champ));
-      candHtml+=`<div class="cand"><b>${slotLabel(p.code)}</b> candidates: `+
-        cands.map(t=>`${WC.TEAMS[t].flag} ${t} (${pct(WC.TEAMS[t].champ)})`).join(" · ")+`</div>`;
+      const mk = p.code[0]==="W"?"g1" : p.code[0]==="R"?"g2" : "g3";
+      const sub = p.code[0]==="W"?("Chance to win Group "+p.code.slice(2))
+                : p.code[0]==="R"?("Chance to finish 2nd in Group "+p.code.slice(2))
+                : "Chance to finish 3rd in group";
+      let cands=eligibleTeams(p.code).slice().sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk]);
+      let shown=cands.filter(t=>WC.TEAMS[t][mk]>=0.005);
+      if(!shown.length) shown=cands.slice(0,3);
+      const max=Math.max(...shown.map(t=>WC.TEAMS[t][mk]),0.001);
+      candHtml+=`<div class="cblock">
+        <div class="chead">${slotLabel(p.code)}<span class="csub">${sub}</span></div>
+        ${shown.map(t=>{const v=WC.TEAMS[t][mk];const w=Math.max(3,(v/max)*100);
+          return `<div class="crow"><span class="crfl">${WC.TEAMS[t].flag}</span>`
+            +`<span class="crnm">${t}</span>`
+            +`<span class="crbar"><i style="width:${w}%;background:${heat(v,0,max)}"></i></span>`
+            +`<span class="crpct">${pct(v)}</span></div>`;}).join("")}
+      </div>`;
     }
   });
   showPanel(`
