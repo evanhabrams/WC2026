@@ -19,26 +19,38 @@ body{background:radial-gradient(1200px 600px at 70% -10%, #16202e 0%, var(--navy
   color:var(--ink);font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   -webkit-font-smoothing:antialiased;min-height:100vh}
 .wrap{max-width:1640px;margin:0 auto;padding:18px 20px 80px}
-header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
-.brand{display:flex;align-items:center;gap:11px}
-.check{background:var(--green);color:var(--green-dark);width:34px;height:34px;border-radius:6px;display:flex;
-  align-items:center;justify-content:center;font-weight:800;font-size:23px;flex:0 0 auto;box-shadow:0 0 18px rgba(0,200,83,.3)}
-h1{font-family:'Saira Condensed';font-weight:700;font-size:30px;letter-spacing:.5px;line-height:1}
-.subtitle{font-family:'Saira';font-weight:500;font-size:12.5px;color:var(--gray3);letter-spacing:.2px;margin-top:4px;max-width:640px}
-.status-stack{display:flex;flex-direction:column;align-items:flex-end;gap:9px}
+header.top{margin-bottom:18px;padding-bottom:15px;border-bottom:1px solid var(--line);position:relative}
+header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--green),rgba(0,200,83,0))}
+.hdr-main{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.check{background:var(--green);color:var(--green-dark);width:36px;height:36px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:24px;flex:0 0 auto;box-shadow:0 4px 14px rgba(0,200,83,.26)}
+.brand-txt h1{font-family:'Saira Condensed';font-weight:700;font-size:26px;letter-spacing:.4px;line-height:1}
+.brand-txt .t-thin{color:var(--gray3);font-weight:600}
+.subtitle{font-family:'Saira';font-weight:500;font-size:12px;color:var(--gray3);letter-spacing:.2px;margin-top:6px}
+.subtitle .dim{color:var(--gray4)}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .last-updated{font-family:'Saira Condensed';display:flex;flex-direction:column;align-items:flex-end;gap:1px;
-  background:rgba(0,200,83,0.10);border:1px solid rgba(0,200,83,0.45);border-radius:9px;padding:6px 15px}
-.lu-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:1.2px;line-height:1}
-.lu-val{font-size:20px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.4px;line-height:1.1;margin-top:2px}
-.toolbar{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.btn{font-family:'Saira';font-weight:600;font-size:12.5px;color:var(--ink);background:var(--navy3);
-  border:1px solid var(--line);border-radius:8px;padding:8px 13px;cursor:pointer;transition:.15s;letter-spacing:.2px}
+  background:rgba(0,200,83,0.09);border:1px solid rgba(0,200,83,0.4);border-radius:9px;padding:5px 13px}
+.lu-label{font-size:9px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.3px;line-height:1}
+.lu-val{font-size:18px;font-weight:700;color:#fff;letter-spacing:.4px;line-height:1.1;margin-top:2px}
+.toolbar{display:flex;gap:8px;align-items:center}
+.btn{font-family:'Saira';font-weight:600;font-size:12px;color:var(--ink);background:var(--navy3);border:1px solid var(--line);
+  border-radius:8px;padding:8px 13px;cursor:pointer;transition:.15s;letter-spacing:.2px;white-space:nowrap}
 .btn:hover{background:var(--navy4);border-color:#4b5563}
-.btn.primary{background:var(--green);color:#06140a;border-color:transparent}
-.btn.primary:hover{background:var(--green-light)}
-.legend{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--gray3);margin:10px 2px 16px}
-.scale{height:9px;width:150px;border-radius:5px;background:linear-gradient(90deg,var(--r1),var(--mid),var(--g0))}
-.hint{font-size:11.5px;color:var(--gray4)}
+.btn.primary{background:rgba(0,200,83,.12);color:var(--green-light);border-color:rgba(0,200,83,.4)}
+.btn.primary:hover{background:rgba(0,200,83,.2);border-color:var(--green)}
+.hdr-legend{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}
+.leg-scale{display:flex;align-items:center;gap:9px}
+.leg-label{font-family:'Saira Condensed';font-weight:600;letter-spacing:.6px;text-transform:uppercase;font-size:10.5px;color:var(--gray4)}
+.scale{height:8px;width:118px;border-radius:5px;background:linear-gradient(90deg,var(--r1),var(--mid),var(--g0))}
+.leg-ends{font-size:10.5px;color:var(--gray4)}
+.hints{display:flex;gap:7px;flex-wrap:wrap}
+.chip{font-size:10.5px;color:var(--gray3);background:var(--navy2);border:1px solid var(--line);border-radius:999px;
+  padding:4px 11px;letter-spacing:.2px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
 
 /* BRACKET LAYOUT */
 .board{display:flex;gap:14px;overflow-x:auto;padding-bottom:18px;align-items:stretch}
@@ -132,28 +144,38 @@ h1{font-family:'Saira Condensed';font-weight:700;font-size:30px;letter-spacing:.
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand">
-      <span class="check">✓</span>
-      <div>
-        <h1>World Cup 2026 — Knockout Bracket</h1>
-        <div class="subtitle">Action Network Projections (via Nick Giffen &amp; others) • Full interactive. Tap teams, matchups.</div>
+    <div class="hdr-main">
+      <div class="brand">
+        <span class="check">✓</span>
+        <div class="brand-txt">
+          <h1>World Cup 2026 <span class="t-thin">— Knockout Bracket</span></h1>
+          <div class="subtitle">Action Network Projections <span class="dim">· via Nick Giffen &amp; others</span></div>
+        </div>
+      </div>
+      <div class="hdr-right">
+        <div class="last-updated">
+          <span class="lu-label">Last Updated</span>
+          <span class="lu-val" id="lastUpdated">—</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn primary" id="fillproj">Fill projected W/R</button>
+          <button class="btn" id="reset">Reset</button>
+        </div>
       </div>
     </div>
-    <div class="status-stack">
-      <div class="last-updated">
-        <span class="lu-label">Last Updated</span>
-        <span class="lu-val" id="lastUpdated">—</span>
+    <div class="hdr-legend">
+      <div class="leg-scale">
+        <span class="leg-label">Win probability</span>
+        <span class="scale"></span>
+        <span class="leg-ends">low → high</span>
       </div>
-      <div class="toolbar">
-        <button class="btn" id="fillproj">Fill projected W/R</button>
-        <button class="btn" id="reset">Reset</button>
+      <div class="hints">
+        <span class="chip">Tap a <b>team</b> — full path</span>
+        <span class="chip">Tap a <b>match</b> — compare</span>
+        <span class="chip">Tap an <b>empty slot</b> — assign</span>
       </div>
     </div>
   </header>
-  <div class="legend">
-    <span>Win probability</span><span class="scale"></span>
-    <span class="hint">low → high &nbsp;·&nbsp; click a team for its path · click a match header to compare · click an empty slot to assign</span>
-  </div>
   <div class="board" id="board"></div>
 </div>
 <div class="scrim" id="scrim"></div>
