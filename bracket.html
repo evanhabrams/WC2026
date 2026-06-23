@@ -93,6 +93,11 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
   border:1px solid var(--line);border-radius:5px;color:var(--gray3);padding:2px 5px;cursor:pointer;opacity:0;transition:.12s}
 .match:hover .advbtn{opacity:1}
 .advbtn:hover{background:var(--green);color:#06140a;border-color:transparent}
+.clrbtn{position:absolute;left:4px;top:4px;width:16px;height:16px;border-radius:50%;border:1px solid var(--line);
+  background:var(--navy3);color:var(--gray3);font-size:8.5px;line-height:1;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;opacity:0;transition:.12s;padding:0;z-index:3}
+.match:hover .clrbtn{opacity:.8}
+.clrbtn:hover{opacity:1;background:var(--red);color:#fff;border-color:transparent}
 .spacer{flex:1}
 
 /* champion banner */
@@ -323,6 +328,11 @@ function slotEl(no,side,part,st){
       a.title="Mark winner → next round";
       a.addEventListener('click',e=>{e.stopPropagation();setWinner(no,side);});
       s.appendChild(a);}
+    // clear control — only for directly-assigned R32 slots (returns the dropdown)
+    if(part.kind==="slot"){const x=document.createElement('button');x.className="clrbtn";x.textContent="✕";
+      x.title="Remove team — pick another";
+      x.addEventListener('click',e=>{e.stopPropagation();assign(no,side,"");});
+      s.appendChild(x);}
   } else {
     s.innerHTML=`<span class="fl">·</span><span class="nm">${part.code? (part.kind==="slot"?slotLabel(part.code):part.code) : "TBD"}</span>`;
     if(part.kind==="slot"){
