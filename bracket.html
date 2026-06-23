@@ -19,11 +19,17 @@ body{background:radial-gradient(1200px 600px at 70% -10%, #16202e 0%, var(--navy
   color:var(--ink);font-family:'Saira',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   -webkit-font-smoothing:antialiased;min-height:100vh}
 .wrap{max-width:1640px;margin:0 auto;padding:18px 20px 80px}
-header.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:6px}
-.badge{width:34px;height:34px;border-radius:50%;background:var(--green);display:grid;place-items:center;
-  color:#06140a;font-weight:800;font-size:20px;box-shadow:0 0 18px rgba(0,200,83,.35)}
+header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.brand{display:flex;align-items:center;gap:11px}
+.check{background:var(--green);color:var(--green-dark);width:34px;height:34px;border-radius:6px;display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:23px;flex:0 0 auto;box-shadow:0 0 18px rgba(0,200,83,.3)}
 h1{font-family:'Saira Condensed';font-weight:700;font-size:30px;letter-spacing:.5px;line-height:1}
-h1 small{display:block;font-family:'Saira';font-weight:500;font-size:12px;color:var(--gray3);letter-spacing:.3px;margin-top:3px}
+.subtitle{font-family:'Saira';font-weight:500;font-size:12.5px;color:var(--gray3);letter-spacing:.2px;margin-top:4px;max-width:640px}
+.status-stack{display:flex;flex-direction:column;align-items:flex-end;gap:9px}
+.last-updated{font-family:'Saira Condensed';display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+  background:rgba(0,200,83,0.10);border:1px solid rgba(0,200,83,0.45);border-radius:9px;padding:6px 15px}
+.lu-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:1.2px;line-height:1}
+.lu-val{font-size:20px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.4px;line-height:1.1;margin-top:2px}
 .toolbar{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .btn{font-family:'Saira';font-weight:600;font-size:12.5px;color:var(--ink);background:var(--navy3);
   border:1px solid var(--line);border-radius:8px;padding:8px 13px;cursor:pointer;transition:.15s;letter-spacing:.2px}
@@ -126,11 +132,22 @@ h1 small{display:block;font-family:'Saira';font-weight:500;font-size:12px;color:
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="badge">✦</div>
-    <h1>World Cup 2026 — Knockout Bracket<small id="updlbl"></small></h1>
-    <div class="toolbar">
-      <button class="btn" id="fillproj">Fill projected W/R</button>
-      <button class="btn" id="reset">Reset</button>
+    <div class="brand">
+      <span class="check">✓</span>
+      <div>
+        <h1>World Cup 2026 — Knockout Bracket</h1>
+        <div class="subtitle">Action Network Projections (via Nick Giffen &amp; others) • Full interactive. Tap teams, matchups.</div>
+      </div>
+    </div>
+    <div class="status-stack">
+      <div class="last-updated">
+        <span class="lu-label">Last Updated</span>
+        <span class="lu-val" id="lastUpdated">—</span>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="fillproj">Fill projected W/R</button>
+        <button class="btn" id="reset">Reset</button>
+      </div>
     </div>
   </header>
   <div class="legend">
@@ -159,7 +176,9 @@ ALL_MATCHES[104]={...WC.BRACKET.FINAL,round:"FINAL"};
 ALL_MATCHES[103]={...WC.BRACKET.THIRD,round:"THIRD"};
 Object.keys(ALL_MATCHES).forEach(n=>SLOTS[n]={a:null,b:null,winner:null});
 
-document.getElementById('updlbl').textContent = WC.updated + " · slots editable as teams qualify";
+const _mo={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+const _md=(WC.updated||'').match(/([A-Z][a-z]{2}) (\d{1,2}), (\d{4})/);
+document.getElementById('lastUpdated').textContent = WC.updated_label || (_md ? (_mo[_md[1]]+'/'+_md[2]) : '—');
 
 /* ---------- persistence ---------- */
 const LSKEY='wc2026_bracket_v1';
