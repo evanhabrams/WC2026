@@ -437,32 +437,44 @@ function openCompare(no){
     const fmt=(v)=>v==null?"—":(k==="fifa"||k==="elo"?v:pct(v));
     rows+=`<div class="cmprow"><div class="cv l">${fmt(va)}</div><div class="clab">${lb}</div><div class="cv r">${fmt(vb)}</div></div>`;
   });
-  let candHtml="";
-  [["a",pa],["b",pb]].forEach(([sd,p])=>{
-    if(!p.team && p.kind==="slot"){
-      const mk = p.code[0]==="W"?"g1" : p.code[0]==="R"?"g2" : "g3";
-      const sub = p.code[0]==="W"?("Chance to win Group "+p.code.slice(2))
-                : p.code[0]==="R"?("Chance to finish 2nd in Group "+p.code.slice(2))
-                : "Chance to finish 3rd in group";
+  function codesOf(n){const mm=ALL_MATCHES[n];let o=[];
+    ["a","b"].forEach(s=>{const r=mm[s];o=o.concat(typeof r==="string"?[r]:codesOf(r));});return o;}
+  function slotTop(code){const mk=code[0]==="W"?"g1":code[0]==="R"?"g2":"g3";
+    return eligibleTeams(code).slice().sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk])[0];}
+  function rowsHtml(list,mk){const max=Math.max(...list.map(t=>WC.TEAMS[t][mk]),0.001);
+    return list.map(t=>{const v=WC.TEAMS[t][mk];const w=Math.max(3,(v/max)*100);
+      return `<div class="crow"><span class="crfl">${WC.TEAMS[t].flag}</span><span class="crnm">${t}</span>`
+        +`<span class="crbar"><i style="width:${w}%;background:${heat(v,0,max)}"></i></span>`
+        +`<span class="crpct">${pct(v)}</span></div>`;}).join("");}
+  const RND={R16:["r16","the Round of 16"],QF:["qf","the Quarter-finals"],
+             SF:["sf","the Semi-finals"],FINAL:["final","the Final"],THIRD:["sf","the Semi-finals"]};
+  let candHtml="", candTitle="";
+  if(pa.kind==="slot" || pb.kind==="slot"){
+    candTitle="Who can fill these slots";
+    [["a",pa],["b",pb]].forEach(([sd,p])=>{
+      if(p.team || p.kind!=="slot") return;
+      const mk=p.code[0]==="W"?"g1":p.code[0]==="R"?"g2":"g3";
+      const sub=p.code[0]==="W"?("Chance to win Group "+p.code.slice(2))
+              :p.code[0]==="R"?("Chance to finish 2nd in Group "+p.code.slice(2))
+              :"Chance to finish 3rd in group";
       let cands=eligibleTeams(p.code).slice().sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk]);
-      let shown=cands.filter(t=>WC.TEAMS[t][mk]>=0.005);
-      if(!shown.length) shown=cands.slice(0,3);
-      const max=Math.max(...shown.map(t=>WC.TEAMS[t][mk]),0.001);
-      candHtml+=`<div class="cblock">
-        <div class="chead">${slotLabel(p.code)}<span class="csub">${sub}</span></div>
-        ${shown.map(t=>{const v=WC.TEAMS[t][mk];const w=Math.max(3,(v/max)*100);
-          return `<div class="crow"><span class="crfl">${WC.TEAMS[t].flag}</span>`
-            +`<span class="crnm">${t}</span>`
-            +`<span class="crbar"><i style="width:${w}%;background:${heat(v,0,max)}"></i></span>`
-            +`<span class="crpct">${pct(v)}</span></div>`;}).join("")}
-      </div>`;
-    }
-  });
+      let shown=cands.filter(t=>WC.TEAMS[t][mk]>=0.005); if(!shown.length)shown=cands.slice(0,3);
+      candHtml+=`<div class="cblock"><div class="chead">${slotLabel(p.code)}<span class="csub">${sub}</span></div>${rowsHtml(shown,mk)}</div>`;
+    });
+  } else if((!pa.team || !pb.team) && RND[m.round]){
+    // feeder match still open: projected R32 qualifiers feeding this match, by chance to reach this round
+    candTitle="Who could reach this match";
+    const [mk,rname]=RND[m.round];
+    const set=new Set(); codesOf(no).forEach(c=>{const t=slotTop(c); if(t)set.add(t);});
+    let cands=[...set].sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk]);
+    let shown=cands.filter(t=>WC.TEAMS[t][mk]>=0.005).slice(0,10); if(!shown.length)shown=cands.slice(0,6);
+    candHtml=`<div class="cblock"><div class="chead">Projected contenders<span class="csub">Projected group qualifiers in this section · chance to reach ${rname}</span></div>${rowsHtml(shown,mk)}</div>`;
+  }
   showPanel(`
     <div class="sectitle">Match ${no} · ${m.date} · ${m.venue}</div>
     <div class="cmp">${head(pa)}<div class="vs">vs</div>${head(pb)}</div>
     ${(ta||tb)?`<div class="sectitle">Side-by-side</div>${rows}`:""}
-    ${candHtml?`<div class="sectitle" style="margin-top:14px">Who can fill these slots</div>${candHtml}`:""}
+    ${candHtml?`<div class="sectitle" style="margin-top:14px">${candTitle}</div>${candHtml}`:""}
     ${(ta&&tb)?`<div class="note" style="margin-top:14px">Hover a team in the bracket and click <b>advance</b> to push the winner into Match ${nextMatchOf(no)||"—"}.</div>`:""}
   `);
 }
