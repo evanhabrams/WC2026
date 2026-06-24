@@ -583,13 +583,14 @@ function fillProjected(){
       if(teams&&teams[idx])SLOTS[m.m][sd]=teams[idx];
     }
   }));
+  seedConfirmed();   // confirmed (real) teams always override projections
 }
 const projToggle=document.getElementById('projToggle');
 function setToggle(on){ projToggle.setAttribute('aria-checked', on?'true':'false'); }
 projToggle.addEventListener('click',()=>{
   const on = projToggle.getAttribute('aria-checked')!=='true';
   if(on){ fillProjected(); }
-  else { if(!confirm("Clear all assigned teams and results?")){return;} clearBoard(); }
+  else { if(!confirm("Clear all assigned teams and results?")){return;} clearBoard(); seedConfirmed(); }
   setToggle(on); save(); render(); closePanel();
 });
 
@@ -609,17 +610,16 @@ themeToggle.addEventListener('click',()=>{
 
 /* ---------- pre-seed confirmed group winners (verified Jun 23) ---------- */
 function seedConfirmed(){
-  // Mexico=Win A, USA=Win D, Germany=Win E, Argentina=Win J  (FIFA-confirmed group winners)
-  const conf={"W-A":"Mexico","W-D":"United States","W-E":"Germany","W-J":"Argentina"};
+  // WC.CONFIRMED maps R32 slot codes (W-x / R-x) to FIFA-confirmed teams (built by the bake
+  // from results.json). Falls back to the original four winners if not present.
+  const conf = WC.CONFIRMED || {"W-A":"Mexico","W-D":"United States","W-E":"Germany","W-J":"Argentina"};
   WC.BRACKET.R32.forEach(m=>["a","b"].forEach(sd=>{
     const c=m[sd]; if(conf[c]) SLOTS[m.m][sd]=conf[c];
   }));
 }
 
 load();
-// only seed if nothing saved yet
-let any=false;for(const k in SLOTS){if(SLOTS[k].a||SLOTS[k].b){any=true;break;}}
-if(!any)seedConfirmed();
+seedConfirmed();   // always apply confirmed teams (authoritative for every viewer)
 // reflect toggle: on if most Winner/Runner-up slots are filled
 (function(){let f=0,t=0;WC.BRACKET.R32.forEach(m=>["a","b"].forEach(sd=>{
   const c=m[sd]; if(c[0]==="W"||c[0]==="R"){t++; if(SLOTS[m.m][sd])f++;}}));
