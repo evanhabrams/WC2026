@@ -478,10 +478,7 @@ function openTeam(team){
     <div class="sectitle">World Cup pedigree</div>
     <div class="sp2"><div class="spc"><span class="li-k">Appearances</span><span class="li-v">${T.wcApps??"—"}</span></div>
       <div class="spc"><span class="li-k">Last edition</span><span class="li-v">${T.prev||"—"}</span></div></div>
-    <div class="sectitle">Projected group line · BETSiE</div>
-    <div class="note">${T.p_w!=null?T.p_w.toFixed(2):"—"}W · ${T.p_d!=null?T.p_d.toFixed(2):"—"}D · ${T.p_l!=null?T.p_l.toFixed(2):"—"}L &nbsp;|&nbsp;
-      GF ${T.p_gf!=null?T.p_gf.toFixed(1):"—"} · GA ${T.p_ga!=null?T.p_ga.toFixed(1):"—"} · GD ${T.p_gd!=null?(T.p_gd>=0?'+':'')+T.p_gd.toFixed(1):"—"} · ${T.p_pts!=null?T.p_pts.toFixed(2)+" pts":"—"}</div>
-    <div class="prov">Model probabilities & group split: Giffen Tournament Sims · Market odds: book consensus · Manager, form, set pieces: Action tool · Expected table: BETSiE · FIFA/Elo: tool ratings</div>
+    <div class="prov">Model probabilities & group split: Giffen Tournament Sims · Market odds: book consensus · Manager, form, set pieces: Action tool · FIFA/Elo: tool ratings</div>
   `);
 }
 const CMP=[["champ","Champion · model"],["mkt","Champion · market"],["sf","Reach SF"],["qf","Reach QF"],["r16","Reach R16"],["fifa","FIFA rank"],["elo","Elo"]];
