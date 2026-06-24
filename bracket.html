@@ -75,7 +75,24 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
 .chip b{color:var(--ink);font-weight:600}
 
 /* BRACKET LAYOUT */
-.board{display:flex;gap:14px;overflow-x:auto;padding-bottom:18px;align-items:stretch}
+.board{display:flex;gap:14px;overflow-x:auto;padding-bottom:18px;align-items:stretch;flex:1 1 auto;min-width:0}
+.boardrow{display:flex;gap:18px;align-items:flex-start}
+.standings{flex:0 0 336px;display:none;flex-direction:column;gap:12px}
+.standings.on{display:flex}
+.st-title{font-family:'Saira Condensed';font-weight:700;font-size:16px;letter-spacing:1.8px;text-transform:uppercase;color:var(--ink);padding:6px 0 2px}
+.st-sub{font-size:11px;color:var(--gray4);margin-top:-6px;margin-bottom:2px}
+.st-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.st-grp{background:linear-gradient(180deg,var(--card-top),var(--card-bot));border:1px solid var(--line);border-radius:10px;padding:8px 9px}
+.st-gh{font-family:'Saira Condensed';font-weight:700;font-size:12px;letter-spacing:1.2px;color:var(--gray3);text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between}
+.st-gh .st-cols{color:var(--gray4);font-family:inherit;letter-spacing:.5px}
+.st-row{display:grid;grid-template-columns:13px 16px 1fr 18px 22px 20px;align-items:center;gap:5px;font-size:11.5px;padding:2px 0;color:var(--ink)}
+.st-row .st-pos{color:var(--gray4);font-size:10px;text-align:center}
+.st-row .st-nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-row .st-n{text-align:center;color:var(--gray3);font-variant-numeric:tabular-nums}
+.st-row .st-pts{text-align:center;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.st-row.qual{border-left:2px solid var(--pos);margin-left:-9px;padding-left:7px}
+.st-row .st-q{color:var(--pos);font-size:10px}
+.st-row.adv .st-pos{color:var(--pos)}
 .col{display:flex;flex-direction:column;min-width:208px;flex:0 0 auto}
 .col.center{min-width:236px}
 .coltitle{font-family:'Saira Condensed';font-weight:700;font-size:16px;letter-spacing:1.8px;text-transform:uppercase;
@@ -194,6 +211,12 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
 .note{font-size:11px;color:var(--gray4);background:var(--navy2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;line-height:1.5;margin-bottom:14px}
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.2s;z-index:35}
 .scrim.on{opacity:1;pointer-events:auto}
+@media(max-width:1180px){
+  .boardrow{flex-direction:column}
+  .standings{flex-basis:auto;width:100%}
+  .standings.on{display:flex}
+  .st-grid{grid-template-columns:1fr 1fr 1fr}
+}
 @media(max-width:640px){
   .wrap{padding:12px 10px 60px}
   .brand-txt h1{font-size:28px}
@@ -203,6 +226,7 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
   .hdr-legend{margin-top:11px;padding-top:10px}
   .chip{font-size:10px;padding:4px 9px}
   .lu-val{font-size:17px}
+  .st-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -249,7 +273,10 @@ header.top::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;hei
       </div>
     </div>
   </header>
-  <div class="board" id="board"></div>
+  <div class="boardrow">
+    <div class="board" id="board"></div>
+    <aside class="standings" id="standings"></aside>
+  </div>
 </div>
 <div class="scrim" id="scrim"></div>
 <aside class="panel" id="panel"><button class="x" id="px">✕</button><div id="pbody"></div></aside>
@@ -598,6 +625,35 @@ if(!any)seedConfirmed();
   const c=m[sd]; if(c[0]==="W"||c[0]==="R"){t++; if(SLOTS[m.m][sd])f++;}}));
   setToggle(t>0 && f>=t-2);})();
 render();
-</script>
+
+/* ---------- group standings panel (top-right rail) ---------- */
+function renderStandings(){
+  const el=document.getElementById('standings');
+  const S=WC.STANDINGS;
+  if(!el) return;
+  let played=0;
+  if(S){ for(const g in S) S[g].forEach(t=>played+=(t.p||0)); }
+  if(!S || played===0){ el.classList.remove('on'); el.innerHTML=''; return; }
+  let html='<div class="st-title">Group Standings</div>'
+         +'<div class="st-sub">P · GD · Pts &nbsp;·&nbsp; ✓ qualified</div><div class="st-grid">';
+  Object.keys(S).sort().forEach(g=>{
+    html+=`<div class="st-grp"><div class="st-gh"><span>Group ${g}</span></div>`;
+    S[g].forEach((t,i)=>{
+      const gd=(t.gd>0?'+':'')+t.gd;
+      html+=`<div class="st-row${t.q?' qual':''}">`
+          +`<span class="st-pos">${i+1}</span>`
+          +`<span>${t.flag||''}</span>`
+          +`<span class="st-nm">${t.team}${t.q?' <span class="st-q">✓</span>':''}</span>`
+          +`<span class="st-n">${t.p}</span>`
+          +`<span class="st-n">${gd}</span>`
+          +`<span class="st-pts">${t.pts}</span></div>`;
+    });
+    html+='</div>';
+  });
+  el.innerHTML=html+'</div>';
+  el.classList.add('on');
+}
+renderStandings();
+
 </body>
 </html>
