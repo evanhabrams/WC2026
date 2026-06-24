@@ -15,3 +15,5 @@
 # - Generated paste sheets (*_Fill.xlsx, Closing_Odds.xlsx), logs (*.log),
 #   backups/, and the BETSiE projections .xlsx are all ignored.
 # - All the .py scripts stay local too — the live tool only needs the two files above.
+api_keys.json
+!bracket.html
