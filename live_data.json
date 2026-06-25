@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-25T13:31:27.170333+00:00",
+  "updated_at": "2026-06-25T13:37:01.048166+00:00",
   "data_sources": {
     "fifa_rank": {
       "as_of": "2026-06-11",
@@ -21,12 +21,12 @@
       "note": "Full BETSiE refresh. Authoritative through next update."
     },
     "match_odds": {
-      "as_of": "2026-06-25T13:31:25.615940+00:00",
+      "as_of": "2026-06-25T13:36:59.822969+00:00",
       "source": "The Odds API",
       "events": 20
     },
     "winner_outrights": {
-      "as_of": "2026-06-25T13:31:25.791825+00:00",
+      "as_of": "2026-06-25T13:36:59.962598+00:00",
       "source": "The Odds API",
       "books": [
         "BetRivers",
@@ -34,7 +34,7 @@
       ]
     },
     "match_projections": {
-      "as_of": "2026-06-25T13:31:27.170206+00:00",
+      "as_of": "2026-06-25T13:37:01.048069+00:00",
       "source": "Action Network / Nick Giffen",
       "sheet": "https://docs.google.com/spreadsheets/d/12v8WebV5SakStof9ByCLxAKZWeePqbBgGyZs1dTh_DE",
       "tab": "Per Game xG",
@@ -797,15 +797,15 @@
       "home": "Curacao",
       "away": "Ivory Coast",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -849,15 +849,15 @@
       "home": "Ecuador",
       "away": "Germany",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -901,15 +901,15 @@
       "home": "Japan",
       "away": "Sweden",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -939,21 +939,21 @@
       "home": "Tunisia",
       "away": "Netherlands",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
-          "home": 2589,
-          "away": -1087,
-          "draw": 992
+          "home": 2542,
+          "away": -1064,
+          "draw": 971
         },
         "totals": {
           "3.5": {
@@ -967,7 +967,7 @@
         },
         "spreads": {
           "-2.5": {
-            "Netherlands": -121
+            "Netherlands": -120
           },
           "2.5": {
             "Tunisia": 62
@@ -981,15 +981,15 @@
       "home": "Paraguay",
       "away": "Australia",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1031,21 +1031,21 @@
       "home": "Turkey",
       "away": "USA",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
-          "home": 276,
-          "away": -115,
-          "draw": 308
+          "home": 278,
+          "away": -116,
+          "draw": 309
         },
         "totals": {
           "2.5": {
@@ -1077,15 +1077,15 @@
       "home": "Norway",
       "away": "France",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1123,15 +1123,15 @@
       "home": "Senegal",
       "away": "Iraq",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1171,15 +1171,15 @@
       "home": "Cape Verde",
       "away": "Saudi Arabia",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1211,15 +1211,15 @@
       "home": "Uruguay",
       "away": "Spain",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1249,15 +1249,15 @@
       "home": "New Zealand",
       "away": "Belgium",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1297,15 +1297,15 @@
       "home": "Egypt",
       "away": "Iran",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1349,15 +1349,15 @@
       "home": "Croatia",
       "away": "Ghana",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1401,15 +1401,15 @@
       "home": "Panama",
       "away": "England",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1439,10 +1439,10 @@
             "Panama": 139
           },
           "-2.0": {
-            "England": -128
+            "England": -129
           },
           "2.0": {
-            "Panama": -107
+            "Panama": 2
           },
           "-2.25": {
             "England": 102
@@ -1459,15 +1459,15 @@
       "home": "Colombia",
       "away": "Portugal",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
         "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1497,15 +1497,15 @@
       "home": "DR Congo",
       "away": "Uzbekistan",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1541,15 +1541,15 @@
       "home": "Algeria",
       "away": "Austria",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1581,15 +1581,15 @@
       "home": "Jordan",
       "away": "Argentina",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
-        "BetUS",
-        "LowVig.ag",
-        "DraftKings",
         "FanDuel",
-        "BetOnline.ag"
+        "DraftKings",
+        "BetUS",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "BetOnline.ag",
+        "Bovada",
+        "LowVig.ag"
       ],
       "consensus": {
         "h2h": {
@@ -1623,12 +1623,12 @@
       "home": "South Africa",
       "away": "Canada",
       "books": [
-        "MyBookie.ag",
-        "Bovada",
-        "BetRivers",
-        "BetMGM",
         "DraftKings",
-        "FanDuel"
+        "FanDuel",
+        "BetRivers",
+        "MyBookie.ag",
+        "BetMGM",
+        "Bovada"
       ],
       "consensus": {
         "h2h": {
