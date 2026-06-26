@@ -680,6 +680,7 @@ function betsiePath(team){
 
 // ===== BUILDER FUNCTIONS =====
 let DATA = null;
+let NEXT_MATCH = {};
 let team1 = "Argentina", team2 = "France";
 const $ = id => document.getElementById(id);
 
@@ -709,6 +710,15 @@ async function loadLiveData(){
     if (Array.isArray(live.match_projections)) window.MATCH_PROJECTIONS = live.match_projections;
     // Capture timestamp for header display
     if (live.updated_at) window.LAST_UPDATED = live.updated_at;
+    // Load next_match.json overrides (footer text per team). Safe-fails: if the
+    // file is missing or malformed, every team falls through to the default
+    // fixture lookup, i.e. existing behavior is preserved.
+    try {
+      const nm = await fetch('./next_match.json', {cache: 'no-cache'});
+      if (nm.ok) NEXT_MATCH = await nm.json();
+    } catch (e) {
+      console.warn('next_match.json fetch failed (footer override disabled):', e.message);
+    }
     // Show a small "live data" indicator if successful
     const ts = live.updated_at ? new Date(live.updated_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
     console.log('Live data loaded · updated ' + ts);
@@ -1009,7 +1019,18 @@ const nextFixture = (team) => {
     const fx = DATA.fixtures[team] || [];
     const played = new Set((DATA.last_matches[team] || []).map(m => m.date));  // dates already played -> skip
     return fx.find(f => f.date >= _todayISO && !played.has(f.date)) || null;
-  };  const f1 = nextFixture(team1), f2 = nextFixture(team2);
+  };
+  // Footer text per team: next_match.json override wins if non-empty; otherwise
+  // fall through to the live_data.json fixture lookup ("Team next: vs Opp Date").
+  // Empty fixture and no override => "Team: group stage complete" (existing behavior).
+  const footerLine = (team) => {
+    const ov = (NEXT_MATCH[team] || '').trim();
+    if (ov) return `${team}: ${ov}`;
+    const f = nextFixture(team);
+    if (f) return `${team} next: vs ${f.opp} ${f.date_display}`;
+    return `${team}: group stage complete`;
+  };
+  const f1 = nextFixture(team1), f2 = nextFixture(team2);
   // Unified model: Giffen xG (Action Network) if available, else Elo Poisson
   const model = computeMatchupModel(team1, team2);
   const p1 = model.p1raw;
@@ -1056,8 +1077,8 @@ const nextFixture = (team) => {
       </div>
     </div>
     <div class="score-meta">
-      <span><i class="ti ti-calendar-event"></i> ${f1 ? `${team1} next: vs ${f1.opp} ${f1.date_display}` : `${team1}: group stage complete`}</span>
-      <span>${f2 ? `${team2} next: vs ${f2.opp} ${f2.date_display}` : `${team2}: group stage complete`} <i class="ti ti-calendar-event"></i></span>
+      <span><i class="ti ti-calendar-event"></i> ${footerLine(team1)}</span>
+      <span>${footerLine(team2)} <i class="ti ti-calendar-event"></i></span>
     </div>
     <div style="display:flex;justify-content:center;margin-top:8px;font-size:15px;text-transform:uppercase;letter-spacing:0.5px;color:var(--gray4)">
       <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;background:${model.source === 'giffen' ? 'rgba(0,200,83,0.12)' : 'var(--gray1)'};color:${model.source === 'giffen' ? 'var(--green)' : 'var(--gray4)'};font-weight:700">
