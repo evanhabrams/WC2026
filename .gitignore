@@ -17,3 +17,4 @@
 # - All the .py scripts stay local too — the live tool only needs the two files above.
 api_keys.json
 !bracket.html
+!next_match.json
