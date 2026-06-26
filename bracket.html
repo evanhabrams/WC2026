@@ -548,6 +548,9 @@ function openCompare(no){
         +`<span class="crpct">${pct(v)}</span></div>`;}).join("");}
   const RND={R16:["r16","the Round of 16"],QF:["qf","the Quarter-finals"],
              SF:["sf","the Semi-finals"],FINAL:["final","the Final"],THIRD:["sf","the Semi-finals"]};
+  // teams whose group placement is already locked (winners, runners-up, pinned thirds)
+  // — they can't still be "chances to finish" anything, so drop them from candidate lists.
+  const placed=new Set(Object.values(WC.CONFIRMED||{}));
   let candHtml="", candTitle="";
   if(pa.kind==="slot" || pb.kind==="slot"){
     candTitle="Who can fill these slots";
@@ -557,7 +560,7 @@ function openCompare(no){
       const sub=p.code[0]==="W"?("Chance to win Group "+p.code.slice(2))
               :p.code[0]==="R"?("Chance to finish 2nd in Group "+p.code.slice(2))
               :"Chance to finish 3rd in group";
-      let cands=eligibleTeams(p.code).slice().sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk]);
+      let cands=eligibleTeams(p.code).filter(t=>!placed.has(t)).sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk]);
       let shown=cands.filter(t=>WC.TEAMS[t][mk]>=0.005); if(!shown.length)shown=cands.slice(0,3);
       candHtml+=`<div class="cblock"><div class="chead">${slotLabel(p.code)}<span class="csub">${sub}</span></div>${rowsHtml(shown,mk)}</div>`;
     });
@@ -566,7 +569,7 @@ function openCompare(no){
     candTitle="Who could reach this match";
     const [mk,rname]=RND[m.round];
     const set=new Set(); codesOf(no).forEach(c=>{const t=slotTop(c); if(t)set.add(t);});
-    let cands=[...set].sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk]);
+    let cands=[...set].filter(t=>!placed.has(t)).sort((x,y)=>WC.TEAMS[y][mk]-WC.TEAMS[x][mk]);
     let shown=cands.filter(t=>WC.TEAMS[t][mk]>=0.005).slice(0,10); if(!shown.length)shown=cands.slice(0,6);
     candHtml=`<div class="cblock"><div class="chead">Projected contenders<span class="csub">Projected group qualifiers in this section · chance to reach ${rname}</span></div>${rowsHtml(shown,mk)}</div>`;
   }
