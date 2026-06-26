@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-26T15:19:05.864631+00:00",
+  "updated_at": "2026-06-26T17:54:59.839583+00:00",
   "data_sources": {
     "fifa_rank": {
       "as_of": "2026-06-11",
@@ -21,19 +21,19 @@
       "note": "Full BETSiE refresh. Authoritative through next update."
     },
     "match_odds": {
-      "as_of": "2026-06-26T15:19:04.133528+00:00",
+      "as_of": "2026-06-26T17:54:58.316725+00:00",
       "source": "The Odds API",
       "events": 16
     },
     "winner_outrights": {
-      "as_of": "2026-06-26T15:19:04.299379+00:00",
+      "as_of": "2026-06-26T17:54:58.457787+00:00",
       "source": "The Odds API",
       "books": [
         "DraftKings"
       ]
     },
     "match_projections": {
-      "as_of": "2026-06-26T15:19:05.864439+00:00",
+      "as_of": "2026-06-26T17:54:59.839481+00:00",
       "source": "Action Network / Nick Giffen",
       "sheet": "https://docs.google.com/spreadsheets/d/12v8WebV5SakStof9ByCLxAKZWeePqbBgGyZs1dTh_DE",
       "tab": "Per Game xG",
@@ -797,66 +797,20 @@
       "away": "France",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 376,
-          "away": -162,
-          "draw": 359
-        },
-        "totals": {
-          "3.0": {
-            "over": -128,
-            "under": 109
-          },
-          "3.5": {
-            "over": 128,
-            "under": -165
-          },
-          "3.25": {
-            "over": 105,
-            "under": -125
-          }
-        },
-        "spreads": {
-          "-1.0": {
-            "France": 105
-          },
-          "1.0": {
-            "Norway": -123
-          }
-        }
-      }
-    },
-    {
-      "id": "7e6aee294ea1a4792c59558791084528",
-      "commence": "2026-06-26T19:00:00Z",
-      "home": "Senegal",
-      "away": "Iraq",
-      "books": [
-        "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
-        "MyBookie.ag",
-        "Bovada"
-      ],
-      "consensus": {
-        "h2h": {
-          "home": -451,
-          "away": 1111,
-          "draw": 579
+          "home": 596,
+          "away": -255,
+          "draw": 439
         },
         "totals": {
           "3.0": {
@@ -869,11 +823,69 @@
           }
         },
         "spreads": {
+          "-1.5": {
+            "France": 105
+          },
+          "1.5": {
+            "Norway": -124
+          }
+        }
+      }
+    },
+    {
+      "id": "7e6aee294ea1a4792c59558791084528",
+      "commence": "2026-06-26T19:00:00Z",
+      "home": "Senegal",
+      "away": "Iraq",
+      "books": [
+        "FanDuel",
+        "MyBookie.ag",
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
+      ],
+      "consensus": {
+        "h2h": {
+          "home": -411,
+          "away": 1019,
+          "draw": 552
+        },
+        "totals": {
+          "3.0": {
+            "over": -110,
+            "under": -109
+          },
+          "3.5": {
+            "over": 138,
+            "under": -182
+          },
+          "2.5": {
+            "over": -175,
+            "under": 135
+          }
+        },
+        "spreads": {
           "2.0": {
-            "Iraq": -120
+            "Iraq": -146
           },
           "-2.0": {
-            "Senegal": 61
+            "Senegal": 129
+          },
+          "1.5": {
+            "Iraq": 110
+          },
+          "-1.5": {
+            "Senegal": -135
+          },
+          "1.75": {
+            "Iraq": -112
+          },
+          "-1.75": {
+            "Senegal": -108
           }
         }
       }
@@ -885,35 +897,35 @@
       "away": "Saudi Arabia",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 168,
-          "away": 169,
+          "home": 165,
+          "away": 173,
           "draw": 230
         },
         "totals": {
           "2.5": {
             "over": 114,
-            "under": -137
+            "under": -136
           },
           "2.25": {
-            "over": -115,
-            "under": -105
+            "over": -108,
+            "under": -112
           }
         },
         "spreads": {
           "0.0": {
-            "Cape Verde": -109,
-            "Saudi Arabia": -110
+            "Cape Verde": -111,
+            "Saudi Arabia": -107
           }
         }
       }
@@ -925,25 +937,25 @@
       "away": "Spain",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 498,
-          "away": -147,
+          "home": 500,
+          "away": -149,
           "draw": 254
         },
         "totals": {
           "2.5": {
-            "over": 121,
-            "under": -146
+            "over": 124,
+            "under": -150
           },
           "2.25": {
             "over": -105,
@@ -958,10 +970,10 @@
             "Uruguay": -152
           },
           "-0.5": {
-            "Spain": -146
+            "Spain": -148
           },
           "0.5": {
-            "Uruguay": 122
+            "Uruguay": 125
           },
           "-0.75": {
             "Spain": -115
@@ -979,25 +991,25 @@
       "away": "Belgium",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 1328,
-          "away": -558,
-          "draw": 673
+          "home": 1247,
+          "away": -524,
+          "draw": 655
         },
         "totals": {
           "3.5": {
-            "over": -128,
-            "under": 73
+            "over": -126,
+            "under": 37
           },
           "3.75": {
             "over": -105,
@@ -1006,16 +1018,16 @@
         },
         "spreads": {
           "-2.0": {
-            "Belgium": -132
+            "Belgium": -130
           },
           "2.0": {
             "New Zealand": 112
           },
           "-2.25": {
-            "Belgium": -102
+            "Belgium": -105
           },
           "2.25": {
-            "New Zealand": -118
+            "New Zealand": -115
           }
         }
       }
@@ -1027,45 +1039,41 @@
       "away": "Iran",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 147,
-          "away": 283,
-          "draw": 163
+          "home": 143,
+          "away": 289,
+          "draw": 165
         },
         "totals": {
           "2.0": {
-            "over": 108,
-            "under": -127
+            "over": 110,
+            "under": -128
           },
           "1.5": {
-            "over": -178,
-            "under": 138
+            "over": -172,
+            "under": 132
           },
           "1.75": {
-            "over": -130,
-            "under": 110
+            "over": -122,
+            "under": 102
           }
         },
         "spreads": {
           "-0.5": {
-            "Egypt": 147
+            "Egypt": 139
           },
           "0.5": {
-            "Iran": -166
-          },
-          "0.0": {
-            "Egypt": -152,
-            "Iran": 124
+            "Iran": -160
           },
           "-0.25": {
             "Egypt": 102
@@ -1083,29 +1091,29 @@
       "away": "Ghana",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
           "home": -132,
-          "away": 472,
-          "draw": 227
+          "away": 474,
+          "draw": 228
         },
         "totals": {
           "2.5": {
             "over": 129,
-            "under": -155
+            "under": -157
           },
           "2.0": {
-            "over": -159,
-            "under": 115
+            "over": -152,
+            "under": 120
           },
           "2.25": {
             "over": 102,
@@ -1135,20 +1143,20 @@
       "away": "England",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 1539,
-          "away": -631,
-          "draw": 721
+          "home": 1547,
+          "away": -653,
+          "draw": 723
         },
         "totals": {
           "3.0": {
@@ -1160,22 +1168,22 @@
             "under": -144
           },
           "3.25": {
-            "over": -112,
-            "under": -108
+            "over": -115,
+            "under": -105
           }
         },
         "spreads": {
           "-2.0": {
-            "England": -128
+            "England": -130
           },
           "2.0": {
-            "Panama": 56
+            "Panama": 107
           },
           "-2.25": {
-            "England": 102
+            "England": -102
           },
           "2.25": {
-            "Panama": -122
+            "Panama": -118
           }
         }
       }
@@ -1187,25 +1195,25 @@
       "away": "Portugal",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 311,
-          "away": -116,
-          "draw": 271
+          "home": 309,
+          "away": -115,
+          "draw": 269
         },
         "totals": {
           "2.5": {
-            "over": 41,
-            "under": -121
+            "over": 42,
+            "under": -123
           }
         },
         "spreads": {
@@ -1225,33 +1233,33 @@
       "away": "Uzbekistan",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
           "home": -131,
-          "away": 336,
-          "draw": 298
+          "away": 337,
+          "draw": 297
         },
         "totals": {
           "2.5": {
-            "over": -75,
-            "under": -119
+            "over": -46,
+            "under": -120
           }
         },
         "spreads": {
           "-0.5": {
-            "DR Congo": -135
+            "DR Congo": -134
           },
           "0.5": {
-            "Uzbekistan": 63
+            "Uzbekistan": 62
           },
           "-0.75": {
             "DR Congo": 105
@@ -1269,29 +1277,29 @@
       "away": "Austria",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
           "home": 302,
-          "away": 189,
+          "away": 188,
           "draw": 120
         },
         "totals": {
           "2.0": {
-            "over": 119,
-            "under": -143
+            "over": 120,
+            "under": -145
           },
           "1.5": {
-            "over": -176,
-            "under": 136
+            "over": -171,
+            "under": 132
           },
           "1.75": {
             "over": -125,
@@ -1319,29 +1327,29 @@
       "away": "Argentina",
       "books": [
         "FanDuel",
-        "LowVig.ag",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "LowVig.ag",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 1418,
-          "away": -585,
-          "draw": 677
+          "home": 1408,
+          "away": -581,
+          "draw": 678
         },
         "totals": {
           "3.0": {
-            "over": -111,
+            "over": -112,
             "under": -110
           },
           "3.5": {
             "over": 138,
-            "under": -180
+            "under": -182
           },
           "2.5": {
             "over": -175,
@@ -1365,28 +1373,28 @@
       "away": "Canada",
       "books": [
         "FanDuel",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": 435,
-          "away": -142,
-          "draw": 263
+          "home": 432,
+          "away": -141,
+          "draw": 262
         },
         "totals": {
           "2.5": {
             "over": 116,
-            "under": -151
+            "under": -153
           },
           "2.0": {
             "over": -148,
-            "under": 128
+            "under": 127
           }
         },
         "spreads": {
@@ -1412,38 +1420,38 @@
       "away": "Japan",
       "books": [
         "FanDuel",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": -138,
-          "away": 402,
+          "home": -139,
+          "away": 406,
           "draw": 271
         },
         "totals": {
           "2.5": {
-            "over": 70,
-            "under": -128
+            "over": 71,
+            "under": -129
           }
         },
         "spreads": {
           "-0.5": {
-            "Brazil": -139
+            "Brazil": -141
           },
           "0.5": {
-            "Japan": 114
+            "Japan": 115
           },
           "-0.75": {
-            "Brazil": -105
+            "Brazil": -112
           },
           "0.75": {
-            "Japan": -115
+            "Japan": -108
           }
         }
       }
@@ -1455,24 +1463,24 @@
       "away": "Morocco",
       "books": [
         "FanDuel",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
           "home": 114,
-          "away": 262,
-          "draw": 227
+          "away": 264,
+          "draw": 226
         },
         "totals": {
           "2.0": {
-            "over": -149,
-            "under": 119
+            "over": -150,
+            "under": 120
           },
           "2.5": {
             "over": 125,
@@ -1487,10 +1495,10 @@
             "Netherlands": 112
           },
           "0.25": {
-            "Morocco": 102
+            "Morocco": 105
           },
           "-0.25": {
-            "Netherlands": -122
+            "Netherlands": -125
           }
         }
       }
@@ -1502,38 +1510,44 @@
       "away": "Bosnia and Herzegovina",
       "books": [
         "FanDuel",
-        "BetMGM",
-        "DraftKings",
-        "BetOnline.ag",
-        "BetUS",
-        "BetRivers",
         "MyBookie.ag",
-        "Bovada"
+        "BetOnline.ag",
+        "Bovada",
+        "BetRivers",
+        "BetUS",
+        "BetMGM",
+        "DraftKings"
       ],
       "consensus": {
         "h2h": {
-          "home": -224,
+          "home": -248,
           "away": null,
-          "draw": 348
+          "draw": 371
         },
         "totals": {
           "2.5": {
-            "over": -113,
-            "under": -111
+            "over": -117,
+            "under": -108
           }
         },
         "spreads": {
-          "1.0": {
-            "Bosnia & Herzegovina": 110
+          "1.5": {
+            "Bosnia & Herzegovina": -148
           },
-          "-1.0": {
-            "USA": -139
+          "-1.5": {
+            "USA": 118
           },
           "1.25": {
-            "Bosnia & Herzegovina": -122
+            "Bosnia & Herzegovina": -112
           },
           "-1.25": {
-            "USA": 102
+            "USA": -108
+          },
+          "1.0": {
+            "Bosnia & Herzegovina": 128
+          },
+          "-1.0": {
+            "USA": -145
           }
         }
       }
@@ -1549,7 +1563,7 @@
       "Brazil": 1200,
       "Germany": 1300,
       "Netherlands": 1300,
-      "USA": 3000,
+      "USA": 2800,
       "Norway": 3300,
       "Morocco": 4000,
       "Japan": 4000,
@@ -2253,10 +2267,10 @@
       "away": "France",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 0.919,
-      "xg_a": 1.609,
-      "tot_xg": 2.528,
-      "h_spr": 0.69
+      "xg_h": 0.916,
+      "xg_a": 1.887,
+      "tot_xg": 2.803,
+      "h_spr": 0.971
     },
     {
       "game_no": 62,
@@ -2264,10 +2278,10 @@
       "away": "Iraq",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.93,
-      "xg_a": 0.672,
-      "tot_xg": 2.602,
-      "h_spr": -1.258
+      "xg_h": 2.193,
+      "xg_a": 0.68,
+      "tot_xg": 2.873,
+      "h_spr": -1.513
     },
     {
       "game_no": 63,
@@ -2275,10 +2289,10 @@
       "away": "Saudi Arabia",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.063,
-      "xg_a": 1.035,
-      "tot_xg": 2.098,
-      "h_spr": -0.028
+      "xg_h": 1.047,
+      "xg_a": 1.081,
+      "tot_xg": 2.128,
+      "h_spr": 0.034
     },
     {
       "game_no": 64,
@@ -2286,10 +2300,10 @@
       "away": "Spain",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 0.823,
-      "xg_a": 1.969,
-      "tot_xg": 2.792,
-      "h_spr": 1.146
+      "xg_h": 0.825,
+      "xg_a": 1.966,
+      "tot_xg": 2.791,
+      "h_spr": 1.141
     },
     {
       "game_no": 65,
@@ -2298,9 +2312,9 @@
       "home_raw": null,
       "away_raw": null,
       "xg_h": 0.625,
-      "xg_a": 2.943,
-      "tot_xg": 3.568,
-      "h_spr": 2.318
+      "xg_a": 2.945,
+      "tot_xg": 3.57,
+      "h_spr": 2.32
     },
     {
       "game_no": 66,
@@ -2308,10 +2322,10 @@
       "away": "Iran",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.192,
-      "xg_a": 1.021,
-      "tot_xg": 2.213,
-      "h_spr": -0.171
+      "xg_h": 1.186,
+      "xg_a": 1.022,
+      "tot_xg": 2.208,
+      "h_spr": -0.164
     },
     {
       "game_no": 67,
@@ -2320,9 +2334,9 @@
       "home_raw": null,
       "away_raw": null,
       "xg_h": 0.474,
-      "xg_a": 2.519,
-      "tot_xg": 2.993,
-      "h_spr": 2.045
+      "xg_a": 2.521,
+      "tot_xg": 2.995,
+      "h_spr": 2.047
     },
     {
       "game_no": 68,
@@ -2330,10 +2344,10 @@
       "away": "Ghana",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.749,
-      "xg_a": 0.843,
-      "tot_xg": 2.592,
-      "h_spr": -0.906
+      "xg_h": 1.746,
+      "xg_a": 0.841,
+      "tot_xg": 2.587,
+      "h_spr": -0.905
     },
     {
       "game_no": 69,
@@ -2341,10 +2355,10 @@
       "away": "Portugal",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.081,
-      "xg_a": 1.282,
-      "tot_xg": 2.363,
-      "h_spr": 0.201
+      "xg_h": 1.084,
+      "xg_a": 1.28,
+      "tot_xg": 2.364,
+      "h_spr": 0.196
     },
     {
       "game_no": 70,
@@ -2352,10 +2366,10 @@
       "away": "Uzbekistan",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.216,
-      "xg_a": 1.018,
-      "tot_xg": 2.234,
-      "h_spr": -0.198
+      "xg_h": 1.211,
+      "xg_a": 1.019,
+      "tot_xg": 2.23,
+      "h_spr": -0.192
     },
     {
       "game_no": 71,
@@ -2363,10 +2377,10 @@
       "away": "Argentina",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 0.382,
-      "xg_a": 2.892,
-      "tot_xg": 3.274,
-      "h_spr": 2.51
+      "xg_h": 0.383,
+      "xg_a": 2.894,
+      "tot_xg": 3.277,
+      "h_spr": 2.511
     },
     {
       "game_no": 72,
@@ -2374,10 +2388,10 @@
       "away": "Austria",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.214,
-      "xg_a": 1.266,
-      "tot_xg": 2.48,
-      "h_spr": 0.052
+      "xg_h": 1.212,
+      "xg_a": 1.263,
+      "tot_xg": 2.475,
+      "h_spr": 0.051
     }
   ],
   "betsie_stage": {
