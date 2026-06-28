@@ -1148,8 +1148,8 @@ const nextFixture = (team) => {
         <div class="context-card-name">${team1}</div>
         <div class="context-card-group">Group ${grp1}</div>
       </div>
-      <div class="context-row"><span class="lbl">Next Match</span><span class="val">${f1 ? `${f1.date_display} vs ${f1.opp}` : 'Group stage complete'}</span></div>
-      <div class="context-row"><span class="lbl">Venue</span><span class="val">${f1?.stadium || '—'}, ${f1?.city || ''}</span></div>
+      <div class="context-row"><span class="lbl">Next Match</span><span class="val">${f1 ? `${f1.date_display} vs ${f1.opp}` : ((NEXT_MATCH[team1]||'').trim() || 'Group stage complete')}</span></div>
+      <div class="context-row"><span class="lbl">Venue</span><span class="val">${f1 ? `${f1.stadium}, ${f1.city}` : '—'}</span></div>
       <div class="context-row"><span class="lbl">Kickoff</span><span class="val">${f1?.time_et || '—'}</span></div>
       ${mgr1}
       <div class="context-row"><span class="lbl">Last Match</span><span class="val">${lm1 ? `${lm1.date} vs ${lm1.opp}` : 'TBD'}</span></div>
@@ -1160,8 +1160,8 @@ const nextFixture = (team) => {
         <div class="context-card-name">${team2}</div>
         <div class="context-card-group">Group ${grp2}</div>
       </div>
-      <div class="context-row"><span class="lbl">Next Match</span><span class="val">${f2 ? `${f2.date_display} vs ${f2.opp}` : 'Group stage complete'}</span></div>
-      <div class="context-row"><span class="lbl">Venue</span><span class="val">${f2?.stadium || '—'}, ${f2?.city || ''}</span></div>
+      <div class="context-row"><span class="lbl">Next Match</span><span class="val">${f2 ? `${f2.date_display} vs ${f2.opp}` : ((NEXT_MATCH[team2]||'').trim() || 'Group stage complete')}</span></div>
+      <div class="context-row"><span class="lbl">Venue</span><span class="val">${f2 ? `${f2.stadium}, ${f2.city}` : '—'}</span></div>
       <div class="context-row"><span class="lbl">Kickoff</span><span class="val">${f2?.time_et || '—'}</span></div>
       ${mgr2}
       <div class="context-row"><span class="lbl">Last Match</span><span class="val">${lm2 ? `${lm2.date} vs ${lm2.opp}` : 'TBD'}</span></div>
