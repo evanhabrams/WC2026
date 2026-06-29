@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-28T21:58:49.491381+00:00",
+  "updated_at": "2026-06-29T14:28:38.280019+00:00",
   "data_sources": {
     "fifa_rank": {
       "as_of": "2026-06-11",
@@ -33,7 +33,7 @@
       ]
     },
     "match_projections": {
-      "as_of": "2026-06-28T21:58:49.491161+00:00",
+      "as_of": "2026-06-29T14:28:38.279748+00:00",
       "source": "Action Network / Nick Giffen",
       "sheet": "https://docs.google.com/spreadsheets/d/12v8WebV5SakStof9ByCLxAKZWeePqbBgGyZs1dTh_DE",
       "tab": "Per Game xG",
@@ -2288,10 +2288,10 @@
       "away": "Paraguay",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.895,
-      "xg_a": 0.938,
-      "tot_xg": 2.833,
-      "h_spr": -0.957
+      "xg_h": 1.968,
+      "xg_a": 0.891,
+      "tot_xg": 2.859,
+      "h_spr": -1.077
     },
     {
       "game_no": 75,
@@ -2299,10 +2299,10 @@
       "away": "Morocco",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.312,
-      "xg_a": 1.047,
-      "tot_xg": 2.359,
-      "h_spr": -0.265
+      "xg_h": 1.307,
+      "xg_a": 1.028,
+      "tot_xg": 2.335,
+      "h_spr": -0.279
     },
     {
       "game_no": 76,
@@ -2310,10 +2310,10 @@
       "away": "Japan",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 2.001,
-      "xg_a": 0.866,
-      "tot_xg": 2.867,
-      "h_spr": -1.135
+      "xg_h": 1.989,
+      "xg_a": 0.876,
+      "tot_xg": 2.865,
+      "h_spr": -1.113
     },
     {
       "game_no": 77,
@@ -2321,10 +2321,10 @@
       "away": "Sweden",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 2.011,
-      "xg_a": 0.789,
-      "tot_xg": 2.8,
-      "h_spr": -1.222
+      "xg_h": 1.987,
+      "xg_a": 0.78,
+      "tot_xg": 2.767,
+      "h_spr": -1.207
     },
     {
       "game_no": 78,
@@ -2332,10 +2332,10 @@
       "away": "Norway",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.13,
-      "xg_a": 1.608,
-      "tot_xg": 2.738,
-      "h_spr": 0.478
+      "xg_h": 1.109,
+      "xg_a": 1.602,
+      "tot_xg": 2.711,
+      "h_spr": 0.493
     },
     {
       "game_no": 79,
@@ -2343,10 +2343,10 @@
       "away": "Ecuador",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.627,
-      "xg_a": 0.996,
-      "tot_xg": 2.623,
-      "h_spr": -0.631
+      "xg_h": 1.636,
+      "xg_a": 0.991,
+      "tot_xg": 2.627,
+      "h_spr": -0.645
     },
     {
       "game_no": 80,
@@ -2354,10 +2354,10 @@
       "away": "DR Congo",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 2.384,
-      "xg_a": 0.588,
-      "tot_xg": 2.972,
-      "h_spr": -1.796
+      "xg_h": 2.375,
+      "xg_a": 0.577,
+      "tot_xg": 2.952,
+      "h_spr": -1.798
     },
     {
       "game_no": 81,
@@ -2365,10 +2365,10 @@
       "away": "Bosnia and Herzegovina",
       "home_raw": "United States",
       "away_raw": null,
-      "xg_h": 2.042,
-      "xg_a": 0.954,
-      "tot_xg": 2.996,
-      "h_spr": -1.088
+      "xg_h": 2.015,
+      "xg_a": 0.955,
+      "tot_xg": 2.97,
+      "h_spr": -1.06
     },
     {
       "game_no": 82,
@@ -2376,10 +2376,10 @@
       "away": "Senegal",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.558,
-      "xg_a": 1.096,
-      "tot_xg": 2.654,
-      "h_spr": -0.462
+      "xg_h": 1.553,
+      "xg_a": 1.076,
+      "tot_xg": 2.629,
+      "h_spr": -0.477
     },
     {
       "game_no": 83,
@@ -2387,10 +2387,10 @@
       "away": "Croatia",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.526,
-      "xg_a": 0.957,
-      "tot_xg": 2.483,
-      "h_spr": -0.569
+      "xg_h": 1.508,
+      "xg_a": 0.946,
+      "tot_xg": 2.454,
+      "h_spr": -0.562
     },
     {
       "game_no": 84,
@@ -2398,10 +2398,10 @@
       "away": "Austria",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 2.106,
-      "xg_a": 0.727,
-      "tot_xg": 2.833,
-      "h_spr": -1.379
+      "xg_h": 2.081,
+      "xg_a": 0.718,
+      "tot_xg": 2.799,
+      "h_spr": -1.363
     },
     {
       "game_no": 85,
@@ -2409,10 +2409,10 @@
       "away": "Algeria",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.613,
-      "xg_a": 1.188,
-      "tot_xg": 2.801,
-      "h_spr": -0.425
+      "xg_h": 1.607,
+      "xg_a": 1.165,
+      "tot_xg": 2.772,
+      "h_spr": -0.442
     },
     {
       "game_no": 86,
@@ -2420,10 +2420,10 @@
       "away": "Cape Verde",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 2.732,
+      "xg_h": 2.701,
       "xg_a": 0.428,
-      "tot_xg": 3.16,
-      "h_spr": -2.304
+      "tot_xg": 3.129,
+      "h_spr": -2.273
     },
     {
       "game_no": 87,
@@ -2431,10 +2431,10 @@
       "away": "Ghana",
       "home_raw": null,
       "away_raw": null,
-      "xg_h": 1.877,
+      "xg_h": 1.856,
       "xg_a": 0.656,
-      "tot_xg": 2.533,
-      "h_spr": -1.221
+      "tot_xg": 2.512,
+      "h_spr": -1.2
     },
     {
       "game_no": 88,
@@ -2443,9 +2443,9 @@
       "home_raw": null,
       "away_raw": null,
       "xg_h": 0.958,
-      "xg_a": 1.199,
-      "tot_xg": 2.157,
-      "h_spr": 0.241
+      "xg_a": 1.193,
+      "tot_xg": 2.151,
+      "h_spr": 0.235
     }
   ],
   "betsie_stage": {
