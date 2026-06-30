@@ -1205,13 +1205,17 @@ function renderFixturesCard(elId, team, meta){
   const resClass = (res) => res === 'W' ? 'win' : (res === 'L' ? 'loss' : 'draw');
   const resLabel = (res) => res === 'W' ? 'Win' : (res === 'L' ? 'Loss' : 'Draw');
   $(elId).innerHTML = `
-    <h3><i class="ti ti-calendar-event"></i> ${meta.flag} ${team} · Group Stage</h3>
+    <h3><i class="ti ti-calendar-event"></i> ${meta.flag} ${team} · Schedule</h3>
     ${fx.map(f => {
       const r = resultFor(f.date);
-      const rowClass = r ? `fixture-row result ${resClass(r.result)}` : 'fixture-row';
-      const right = r
-        ? `<div class="fixture-time"><span class="fixture-score">${r.gf}–${r.ga}</span><span class="fixture-result-label">FT · ${resLabel(r.result)}</span></div>`
-        : `<div class="fixture-time">${f.time_et}<span class="local">${f.time_local} local</span></div>`;
+      const isPens = r && r.win_type === 'Penalties' && r.pen_gf != null;
+      const cls = !r ? '' : (isPens ? (r.advanced ? 'win' : 'loss') : resClass(r.result));
+      const rowClass = r ? `fixture-row result ${cls}` : 'fixture-row';
+      const right = !r
+        ? `<div class="fixture-time">${f.time_et}<span class="local">${f.time_local} local</span></div>`
+        : isPens
+          ? `<div class="fixture-time"><span class="fixture-result-label">${r.advanced ? 'Won' : 'Lost'}, ${r.pen_gf}–${r.pen_ga} pens</span><span class="local">(${r.gf}–${r.ga} draw)</span></div>`
+          : `<div class="fixture-time"><span class="fixture-score">${r.gf}–${r.ga}</span><span class="fixture-result-label">FT · ${resLabel(r.result)}</span></div>`;
       return `
       <div class="${rowClass}">
         <div class="fixture-date">${f.date_display.split(' ').slice(1).join(' ')}</div>
