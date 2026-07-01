@@ -301,7 +301,10 @@ Object.keys(ALL_MATCHES).forEach(n=>SLOTS[n]={a:null,b:null,winner:null});
 const _mo={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
 const SRC = WC.prob_source || "Nick Giffen";
 const SRC_LONG = WC.prob_source_long || "Giffen Tournament Sims";
-(function(){const el=document.getElementById('srcLabel');if(el)el.textContent="· via "+SRC+" & others";})();
+const IS_GIFFEN = (SRC === "Nick Giffen");
+const SRC_SUFFIX = IS_GIFFEN ? " · Giffen" : "";                       // for sectitles
+const SRC_LONG_SHOW = IS_GIFFEN ? "Giffen Tournament Sims" : "Action Network model";  // for provenance
+(function(){const el=document.getElementById('srcLabel');if(el)el.textContent = (SRC==="Nick Giffen") ? "· via Nick Giffen & others" : "";})();
 const _md=(WC.updated||'').match(/([A-Z][a-z]{2}) (\d{1,2}), (\d{4})/);
 document.getElementById('lastUpdated').textContent = WC.updated_label || (_md ? (_mo[_md[1]]+'/'+_md[2]) : '—');
 
@@ -509,9 +512,9 @@ function openTeam(team){
     </div>
     ${T.mgr?`<div class="line"><span class="li-ic">★</span><div><span class="li-k">Manager</span><span class="li-v">${T.mgr.name}${T.mgr.nat?" · "+T.mgr.nat:""}${T.mgr.yr?" · since "+T.mgr.yr:""}</span></div></div>`:""}
     ${(T.form&&T.form.length)?`<div class="sectitle">Recent form</div>${formPills(T)}`:""}
-    <div class="sectitle">Path probability · ${SRC}</div>
+    <div class="sectitle">Path probability${SRC_SUFFIX}</div>
     ${teamLadder(team)}
-    <div class="sectitle">Group finish · ${SRC}</div>
+    <div class="sectitle">Group finish${SRC_SUFFIX}</div>
     <div class="gsplit">
       ${[["1st",T.g1],["2nd",T.g2],["3rd",T.g3],["4th",T.g4]].map(([lb,v])=>
         `<div class="gcell"><div class="gp">${lb}</div><div class="gv">${pct(v)}</div></div>`).join("")}
@@ -523,7 +526,7 @@ function openTeam(team){
     <div class="sectitle">World Cup pedigree</div>
     <div class="sp2"><div class="spc"><span class="li-k">Appearances</span><span class="li-v">${T.wcApps??"—"}</span></div>
       <div class="spc"><span class="li-k">Last edition</span><span class="li-v">${T.prev||"—"}</span></div></div>
-    <div class="prov">Model probabilities & group split: ${SRC_LONG} · Market odds: book consensus · Manager, form, set pieces: Action tool · FIFA/Elo: tool ratings</div>
+    <div class="prov">Model probabilities & group split: ${SRC_LONG_SHOW} · Market odds: book consensus · Manager, form, set pieces: Action tool · FIFA/Elo: tool ratings</div>
   `);
 }
 const CMP=[["champ","Champion · model"],["mkt","Champion · market"],["sf","Reach SF"],["qf","Reach QF"],["r16","Reach R16"],["fifa","FIFA rank"],["elo","Elo"]];
